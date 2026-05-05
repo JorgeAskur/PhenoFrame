@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Generated outputs
+plants/*.obj
+plants/*.mtl
+plants/separated/
+plants/leaves_separated/
+traits.xml
+
+# IDE / tool config
+.claude/
+.vscode/
+.idea/
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Build artifacts (keep pre-built DLL for distribution)
+MaizeModel/build/
+
+# Sorghum (separate project)
+SorghumModel/
+SorghumWrapper.py
+test_SorghumPM.py
