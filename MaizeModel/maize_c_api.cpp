@@ -56,6 +56,14 @@ namespace {
         dst.waveRAmp = src.wave_r_amp;
         dst.waveRFreq = src.wave_r_freq;
         dst.waveRPhase = src.wave_r_phase;
+        dst.surfaceNoiseAmp = src.surface_noise_amp;
+        dst.surfaceNoiseFreq = src.surface_noise_freq;
+        dst.midribTipTaperStart = src.midrib_tip_taper_start;
+        dst.midribTextureStrength = src.midrib_texture_strength;
+        dst.midribWidth = src.midrib_width;
+        dst.liguleWrapLengthScale = src.ligule_wrap_length_scale;
+        dst.liguleUnfoldSharpness = src.ligule_unfold_sharpness;
+        dst.sheathOuterScale = src.sheath_outer_scale;
         dst.useCtrlOverrides = (src.use_ctrl_overrides != 0);
     }
 
@@ -311,5 +319,20 @@ void maize_default_leaf_desc(MaizeLeafDesc* out_desc) {
     out_desc->wave_r_amp = 0.0f;
     out_desc->wave_r_freq = 0.0f;
     out_desc->wave_r_phase = 0.0f;
+    out_desc->surface_noise_amp = 0.01f;
+    out_desc->surface_noise_freq = 8.0f;
+    out_desc->midrib_tip_taper_start = 0.75f;
+    out_desc->midrib_texture_strength = 0.35f;
+    out_desc->midrib_width = 0.075f;
+    out_desc->ligule_wrap_length_scale = 6.8f;
+    out_desc->ligule_unfold_sharpness = 2.2f;
+    out_desc->sheath_outer_scale = 1.12f;
     out_desc->use_ctrl_overrides = 0;
 }
+
+int maize_c_api_version_major(void) { return MAIZE_C_API_VERSION_MAJOR; }
+int maize_c_api_version_minor(void) { return MAIZE_C_API_VERSION_MINOR; }
+int maize_c_api_version_patch(void) { return MAIZE_C_API_VERSION_PATCH; }
+int maize_leaf_desc_size(void) { return (int)sizeof(MaizeLeafDesc); }
+int maize_tiller_desc_size(void) { return (int)sizeof(MaizeTillerDesc); }
+int maize_leaf_spline_traits_size(void) { return (int)sizeof(MaizeLeafSplineTraits); }

@@ -500,7 +500,7 @@ static LeafGeom buildBladeGeometry(const LeafDesc& leaf, const BladeFrame& blade
 
             // Midrib is a narrow Gaussian ridge centered at u=0.5. It tapers
             // out near the tip so the blade can still resolve to a point
-            float midribMask = std::exp(-std::pow((u01 - 0.5f) / 0.075f, 2.0f));
+            float midribMask = std::exp(-std::pow((u01 - 0.5f) / leaf.midribWidth, 2.0f));
             float midribTipStart = clampf(leaf.midribTipTaperStart, 0.2f, 0.98f);
             float midribTipFade = 1.0f;
             if (sBlade > midribTipStart) {
@@ -654,7 +654,7 @@ namespace Maize {
         // The first sections are handled specially so the blade emerges from a
         // wrapped sheath instead of appearing as a flat ribbon from row 0
         float segmentLen = L.leafLength / (float)(L.splinePoints - 1);
-        float gravityFactor = L.droopiness * 5.0f;
+        float gravityFactor = L.droopiness;
         float t_p1 = (L.splinePoints > 1) ? 1.0f / (float)(L.splinePoints - 1) : 1.0f;
         float halfWidth = L.leafWidth * 0.5f;
         LeafSectionEmitter emitter{ outLeft, outRight, clampf(L.leafCurl, -1.f, 1.f) };

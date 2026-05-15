@@ -1,0 +1,61 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pymaize"
+version = "0.1.0"
+description = "Procedural maize plant modeling and phenotyping trait computation"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [
+    { name = "Jorge Vazquez", email = "vazque81@purdue.edu" },
+]
+keywords = ["maize", "plant", "phenotyping", "procedural-modeling", "agriculture", "3d", "spline"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+dependencies = []
+
+[project.optional-dependencies]
+test = ["pytest>=7"]
+examples = ["matplotlib>=3.7", "notebook>=7"]
+experiments = [
+    "matplotlib>=3.7",
+    "notebook>=7",
+    "pandas>=2",
+    "openpyxl>=3",
+    "scipy>=1.10",
+    "numpy>=1.24",
+]
+
+[project.urls]
+Repository = "https://github.com/JorgeAskur/PyMaize"
+Issues = "https://github.com/JorgeAskur/PyMaize/issues"
+
+[tool.setuptools.packages.find]
+include = ["pymaize*"]
+exclude = ["MaizeModel*", "plants*", "tests*", "experiments*", "examples*"]
+
+[tool.setuptools.package-data]
+pymaize = ["libs/*.dll", "libs/*.so", "libs/*.dylib", "schemas/*.xsd"]
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+testpaths = ["tests"]
+addopts = ["-ra", "--strict-markers"]
+markers = [
+    "wrapper: tests that require the compiled C++ shared library",
+]

@@ -45,6 +45,14 @@ typedef struct {
     float wave_r_amp;
     float wave_r_freq;
     float wave_r_phase;
+    float surface_noise_amp;
+    float surface_noise_freq;
+    float midrib_tip_taper_start;
+    float midrib_texture_strength;
+    float midrib_width;
+    float ligule_wrap_length_scale;
+    float ligule_unfold_sharpness;
+    float sheath_outer_scale;
     int use_ctrl_overrides;
 } MaizeLeafDesc;
 
@@ -107,6 +115,18 @@ MAIZE_C_API int maize_save_xml(MaizeHandle* handle, const char* path);
 
 MAIZE_C_API void maize_default_tiller_desc(MaizeTillerDesc* out_desc);
 MAIZE_C_API void maize_default_leaf_desc(MaizeLeafDesc* out_desc);
+
+/* ABI version introspection — added in C-API 1.1.0 */
+#define MAIZE_C_API_VERSION_MAJOR 1
+#define MAIZE_C_API_VERSION_MINOR 1
+#define MAIZE_C_API_VERSION_PATCH 0
+
+MAIZE_C_API int maize_c_api_version_major(void);
+MAIZE_C_API int maize_c_api_version_minor(void);
+MAIZE_C_API int maize_c_api_version_patch(void);
+MAIZE_C_API int maize_leaf_desc_size(void);
+MAIZE_C_API int maize_tiller_desc_size(void);
+MAIZE_C_API int maize_leaf_spline_traits_size(void);
 
 #ifdef __cplusplus
 }

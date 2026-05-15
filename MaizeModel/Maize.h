@@ -35,7 +35,8 @@ struct LeafDesc {
     float surfaceNoiseFreq = 8.0f;      // surface noise frequency
     float midribTipTaperStart = 0.75f;  // fraction where the midrib starts fading out
     float midribTextureStrength = 0.35f;// uv compression around the midrib strip
-    float liguleWrapLengthScale = 6.8f; // length of the wrapped part of the sheath 
+    float midribWidth = 0.075f;         // Gaussian half-width of the midrib ridge in UV space (0-1); varies by genotype
+    float liguleWrapLengthScale = 6.8f; // length of the wrapped part of the sheath
     float liguleUnfoldSharpness = 2.2f; // sheath unwrapping into the blade
     float sheathOuterScale = 1.12f;     // Radius expansion around the collar cylinder
     bool useCtrlOverrides = false;      // scalar parameters are ignored for spline generation
@@ -60,7 +61,8 @@ struct TillerDesc {
 
 // Full editable plant description
 struct PlantDesc {
-    std::string species = "maize";
+    std::string species = "maize";           // species name stored at the plant level
+    std::string phenotypeId;                 // phenotype identifier stored at the plant level
     std::vector<TillerDesc> tillers;
 };
 

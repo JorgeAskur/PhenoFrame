@@ -2,6 +2,10 @@
 __pycache__/
 *.pyc
 *.pyo
+*.egg-info/
+build/
+dist/
+.pytest_cache/
 
 # Generated outputs
 plants/*.obj
@@ -9,6 +13,16 @@ plants/*.mtl
 plants/separated/
 plants/leaves_separated/
 traits.xml
+examples/output/
+.ipynb_checkpoints/
+
+# Experiment outputs (figures, intermediate CSVs, fitted descriptors)
+experiments/*/figures/
+experiments/*/outputs/
+experiments/*/fitted_descriptors/
+
+# Local user data (external datasets are never redistributed)
+experiments/data/external/
 
 # IDE / tool config
 .claude/
@@ -19,7 +33,7 @@ traits.xml
 Thumbs.db
 .DS_Store
 
-# Build artifacts (keep pre-built DLL for distribution)
+# Build artifacts (keep bundled binaries in pymaize/libs/ for distribution)
 MaizeModel/build/
 
 # Sorghum (separate project)

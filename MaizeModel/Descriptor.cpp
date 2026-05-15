@@ -108,6 +108,7 @@ namespace Descriptor {
                 leaf_elem->SetAttribute("surfaceNoiseFreq", L.surfaceNoiseFreq);
                 leaf_elem->SetAttribute("midribTipTaperStart", L.midribTipTaperStart);
                 leaf_elem->SetAttribute("midribTextureStrength", L.midribTextureStrength);
+                leaf_elem->SetAttribute("midribWidth", L.midribWidth);
                 leaf_elem->SetAttribute("liguleWrapLengthScale", L.liguleWrapLengthScale);
                 leaf_elem->SetAttribute("liguleUnfoldSharpness", L.liguleUnfoldSharpness);
                 leaf_elem->SetAttribute("sheathOuterScale", L.sheathOuterScale);
@@ -138,11 +139,29 @@ namespace Descriptor {
 
         Maize::plant() = PlantDesc{};
 
-        const XMLElement* species = doc.FirstChildElement("plant")->FirstChildElement("species");
-        if (!species) return false;
-        Maize::plant().species = species->Attribute("name");
+        const XMLElement* plantElem = doc.FirstChildElement("plant");
+        if (!plantElem) return false;
 
-        for (const XMLElement* t = species->FirstChildElement("Tiller"); t; t = t->NextSiblingElement("Tiller")) {
+        // Species name: attribute on <plant>, fall back to legacy <species name="...">
+        if (plantElem->Attribute("species")) {
+            Maize::plant().species = plantElem->Attribute("species");
+        }
+        if (plantElem->Attribute("phenotypeId")) {
+            Maize::plant().phenotypeId = plantElem->Attribute("phenotypeId");
+        }
+
+        // Tillers live directly under <plant>. Legacy files wrapped them in <species>.
+        const XMLElement* tillerParent = plantElem;
+        if (const XMLElement* legacySpecies = plantElem->FirstChildElement("species")) {
+            if (Maize::plant().species.empty() && legacySpecies->Attribute("name")) {
+                Maize::plant().species = legacySpecies->Attribute("name");
+            }
+            if (legacySpecies->FirstChildElement("Tiller")) {
+                tillerParent = legacySpecies;
+            }
+        }
+
+        for (const XMLElement* t = tillerParent->FirstChildElement("Tiller"); t; t = t->NextSiblingElement("Tiller")) {
             TillerDesc td;
             td.type = t->Attribute("type");
             t->QueryFloatAttribute("radius", &td.radius);
@@ -187,6 +206,7 @@ namespace Descriptor {
                     L.surfaceNoiseFreq = 8.0f;
                     L.midribTipTaperStart = 0.75f;
                     L.midribTextureStrength = 0.35f;
+                    L.midribWidth = 0.075f;
                     L.liguleWrapLengthScale = 6.8f;
                     L.liguleUnfoldSharpness = 2.2f;
                     L.sheathOuterScale = 1.12f;
@@ -213,6 +233,7 @@ namespace Descriptor {
                     lf->QueryFloatAttribute("surfaceNoiseFreq", &L.surfaceNoiseFreq);
                     lf->QueryFloatAttribute("midribTipTaperStart", &L.midribTipTaperStart);
                     lf->QueryFloatAttribute("midribTextureStrength", &L.midribTextureStrength);
+                    lf->QueryFloatAttribute("midribWidth", &L.midribWidth);
                     lf->QueryFloatAttribute("liguleWrapLengthScale", &L.liguleWrapLengthScale);
                     lf->QueryFloatAttribute("liguleUnfoldSharpness", &L.liguleUnfoldSharpness);
                     lf->QueryFloatAttribute("sheathOuterScale", &L.sheathOuterScale);
