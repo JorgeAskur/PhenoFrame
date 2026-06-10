@@ -2,17 +2,14 @@
 <!--
   XML Schema for the PyMaize plant descriptor format.
 
-  Validates the structure and required attributes of <plant> documents
-  consumed by `pymaize.compute_traits_from_descriptor` and the C++ engine
-  (`maize_load_xml`). Numeric attributes are typed but not range-checked
-  beyond the C++ engine's hardcoded clamps (e.g. splinePoints in [4, 40]).
+  Validates the structure and required attributes of <plant> documents. 
+  Numeric attributes are typed but not range-checked beyond the C++ 
+  engine's hardcoded clamps (e.g. splinePoints in [4, 40]).
 
   Spline elements (<stemCtrl>, <ctrlCenter>) carry a positional set of
   attributes named p{i}x/p{i}y/p{i}z for i in [0, count-1]; XSD cannot
   pattern-match these directly, so we accept any extra attributes via
   xs:anyAttribute and rely on the parser to read them by index.
-
-  See DESCRIPTOR_FORMAT.md for the human-readable specification.
 -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
 

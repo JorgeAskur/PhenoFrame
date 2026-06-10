@@ -4,10 +4,11 @@ Toolkit for procedural maize plant modeling and phenotyping trait computation.
 
 ## Overview
 
-PyMaize provides two main capabilities:
+PyMaize provides three main capabilities:
 
-1. **Procedural Plant Generation** — Build 3D maize plant meshes (OBJ) from parametric descriptions via a Python wrapper around a C++ geometry engine.
-2. **Trait Computation** — Compute leaf-level phenotyping traits (leaf length, angle, connection point, tip position) from plant descriptor XML files using spline reconstruction.
+1. **Procedural Plant Generation** — Build 3D maize plant meshes (OBJ) from parametric descriptions via a Python wrapper around a C++ geometry engine. The Python wrapper exposes all geometry-related parameters from the C++ engine (26 per-leaf attributes including surface noise, midrib geometry, ligule shaping, and wave parameters) and defaults to maximum mesh resolution (200x200 tessellation density).
+2. **Trait Computation** — Compute leaf-level phenotyping traits (leaf length, angle, connection point, tip position) from plant descriptor XML files using either the C++ engine or a pure-Python forward model. Both pipelines produce functionally identical results (length MAE = 0.0001 mm, inclination MAE = 0.0015°).
+3. **Stochastic Plant Generation** — Sample synthetic descriptor populations from a hierarchical model (4 latent factors + per-node canopy curves + whorl compression) implemented in the sibling C++ `MaizeGenerator` project. A thin Python wrapper (`pymaize.MaizeGenerator`) handles binary discovery, config-XML derivation from population statistics, and batch invocation of `Maize.exe --headless` — no manual subprocess plumbing required.
 
 The descriptor format is documented in [`DESCRIPTOR_FORMAT.md`](DESCRIPTOR_FORMAT.md), with a formal XSD at [`pymaize/schemas/descriptor.xsd`](pymaize/schemas/descriptor.xsd).
 
@@ -173,6 +174,47 @@ python test_TraitComputation.py --xml plants/plant_0.xml --out-xml traits.xml
 | `compute_traits_from_descriptor(xml_path) -> list[dict]` | Parse a descriptor XML and return one trait dict per leaf. |
 | `write_traits_xml(out_path, source_descriptor, traits)` | Serialize traits to a flat XML for downstream pipelines. |
 
+### Stochastic generator wrapper — `pymaize.MaizeGenerator`
+
+Wraps the C++ `MaizeGenerator` from the sibling [`MaizeProceduralModel`](https://github.com/) project via its headless CLI. PyMaize does not ship the binary; the wrapper discovers an existing build at construction time.
+
+| Method | Description |
+|---|---|
+| `MaizeGenerator(exe_path=None)` | Locate `Maize.exe`. Resolution order: explicit arg → `PYMAIZE_GENERATOR_EXE` env var → conventional project paths (`./Maize.exe`, `../MaizeProceduralModel/x64/Release/Maize.exe`, etc.) → system `PATH`. Raises `MaizeGeneratorError` with the full search list if nothing is found. |
+| `derive_config(canopy_params, base_config_path, output_config_path, ...)` | Build a fitted generator config XML by overriding values in a base template. Handles mean/stdDev pairs for plant-level parameters and bottom/middle/top values for per-rank canopy curves. Curve element names are inferred from the `<param>Base` convention (`leafLengthBase` → `leafLengthScaleCurve`, `leafAngleBase` → `leafAngleOffsetCurve`, etc.) and can be overridden per parameter. |
+| `generate(config_path, output_dir, count, seed_start=0, ...)` | Invoke `Maize.exe --headless`; returns the list of generated descriptor XML paths so they can be fed directly to `compute_traits_from_descriptor`. |
+| `find_maize_exe(explicit_path=None)` | Module-level path-discovery helper, also exported. |
+| `MaizeGeneratorError` | Raised when the binary cannot be located or exits non-zero. |
+
+Minimal example:
+
+```python
+from pymaize import MaizeGenerator, compute_traits_from_descriptor
+
+gen = MaizeGenerator()  # locates Maize.exe automatically
+gen.derive_config(
+    canopy_params={
+        "leafAngleBase":  dict(mean=59.0, std=15.0,
+                                bottom_offset=-6.0, top_offset=+3.0),
+        "droopinessBase": dict(mean=-76.6, std=63.0,
+                                bottom_offset=-32.0, top_offset=+30.0),
+        "leafLengthBase": dict(mean=0.317, std=0.114,
+                                bottom_scale=0.76, middle_scale=1.0, top_scale=0.94),
+    },
+    base_config_path="MaizeProceduralModel/maize_generator_config.xml",
+    output_config_path="MaizeProceduralModel/sorghum_config.xml",
+    tiller_azimuth_noise=53.0,
+    leaf_jitter_scale=0.60,
+)
+xml_paths = gen.generate(
+    config_path="MaizeProceduralModel/sorghum_config.xml",
+    output_dir="MaizeProceduralModel/plant_export",
+    count=324,
+    seed_start=0,
+)
+traits = [compute_traits_from_descriptor(p) for p in xml_paths]
+```
+
 ### Convenience
 
 | Function | Description |
@@ -185,7 +227,7 @@ python test_TraitComputation.py --xml plants/plant_0.xml --out-xml traits.xml
 | Symbol | Description |
 |---|---|
 | `pymaize.__version__` | Package version (currently `"0.1.0"`). |
-| `pymaize.wrapper.EXPECTED_C_API_VERSION` | The C-ABI version this Python wrapper expects (currently `(1, 0, 0)`). |
+| `pymaize.wrapper.EXPECTED_C_API_VERSION` | The C-ABI version this Python wrapper expects (currently `(1, 1, 0)`). |
 | `pymaize.wrapper.CApiVersionMismatch` | Raised on major-version mismatch or struct-layout mismatch between the loaded shared library and the Python wrapper. |
 
 ## Project structure
@@ -194,8 +236,10 @@ python test_TraitComputation.py --xml plants/plant_0.xml --out-xml traits.xml
 pymaize/                   # Importable Python package
   __init__.py              # Public API re-exports
   _version.py              # __version__
-  wrapper.py               # ctypes wrapper around the C++ engine
+  wrapper.py               # ctypes wrapper around the C++ mesh engine
+  generator.py             # Wrapper around the C++ stochastic generator (Maize.exe --headless)
   traits.py                # Pure-Python trait computation from descriptor XML
+  skeleton_to_descriptor.py # Inverse fitting: skeleton → procedural descriptor
   libs/                    # Bundled platform binaries
     maize_c_api.dll        # Windows
     libmaize_c_api.so      # Linux (built from source)
@@ -203,7 +247,7 @@ pymaize/                   # Importable Python package
   schemas/
     descriptor.xsd         # Formal XML schema for plant descriptors
 MaizeModel/                # C++ source for the geometry engine
-  maize_c_api.h / .cpp     # C ABI
+  maize_c_api.h / .cpp     # C ABI (v1.1.0)
   Maize.cpp / Maize.h      # Core geometry engine
   Descriptor.cpp / .h      # XML descriptor parser
   vect3d.cpp / .h          # Vector math
@@ -213,8 +257,11 @@ plants/                    # Sample data
   plant_0.xml              # Sample plant descriptor
   maize_leaf.png           # Leaf texture
   maize_stem_texture.png   # Stem texture
-tests/                     # Pytest suite (40 tests)
-examples/                  # Notebooks
+tests/                     # Pytest suite (64 tests)
+experiments/               # Validation notebooks and results
+  README.md                # Experiment overview and status
+  EXPERIMENT_RESULTS.md    # Detailed results report
+  01_phyllotaxis/          # Notebooks, figures, and outputs
 DESCRIPTOR_FORMAT.md       # Human-readable descriptor spec
 LICENSE                    # MIT
 pyproject.toml             # Packaging metadata

@@ -40,3 +40,6 @@ MaizeModel/build/
 SorghumModel/
 SorghumWrapper.py
 test_SorghumPM.py
+
+# Keeping this private for now
+experiments/
