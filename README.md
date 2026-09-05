@@ -127,12 +127,6 @@ for t in traits:
     print(f"Leaf {t['leaf_index']}: length={t['leaf_length']:.4f}")
 ```
 
-Or from the command line:
-
-```bash
-python test_TraitComputation.py --xml plants/plant_0.xml --out-xml traits.xml
-```
-
 ## API reference
 
 ### Procedural model — `phenosuite.Maize`
@@ -259,15 +253,14 @@ plants/                    # Sample data
   maize_leaf.png           # Leaf texture
   maize_stem_texture.png   # Stem texture
 tests/                     # Pytest suite (64 tests)
-experiments/               # Validation notebooks and results
-  README.md                # Experiment overview and status
-  EXPERIMENT_RESULTS.md    # Detailed results report
-  01_phyllotaxis/          # Notebooks, figures, and outputs
+experiments/               # Validation experiments (reproduce the paper)
+  experiments/
+    README.md              # Experiment overview and status
+    EXPERIMENT_RESULTS.md  # Detailed results report
+    results/               # Notebooks + scripts (generated outputs are gitignored)
 DESCRIPTOR_FORMAT.md       # Human-readable descriptor spec
 LICENSE                    # MIT
 pyproject.toml             # Packaging metadata
-test_MaizePM.py            # Demo: build plants from code and from XML
-test_TraitComputation.py   # Demo: compute traits from descriptor XML
 ```
 
 ## License
