@@ -16,8 +16,8 @@ from pathlib import Path
 
 import pytest
 
-from pymaize import compute_traits_from_descriptor
-from pymaize.traits import _leaf_traits_from_center_spline
+from phenosuite import compute_traits_from_descriptor
+from phenosuite.traits import _leaf_traits_from_center_spline
 
 
 # ---------------------------------------------------------------------------

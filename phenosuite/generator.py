@@ -3,7 +3,7 @@
 This module exposes a :class:`MaizeGenerator` class that drives the C++
 ``MaizeGenerator`` implementation (from the sibling ``MaizeProceduralModel``
 project) via its headless command-line mode. It is the stochastic-sampling
-counterpart to :class:`pymaize.Maize`, which wraps the procedural mesh engine.
+counterpart to :class:`phenosuite.Maize`, which wraps the procedural mesh engine.
 
 Two pieces of functionality are exposed:
 
@@ -15,7 +15,7 @@ Two pieces of functionality are exposed:
 2. **Batch generation.** ``generate`` invokes the C++ executable in headless
    mode to sample a batch of plant descriptors (and optionally OBJ meshes) into
    a chosen output directory, then returns the generated descriptor paths so
-   they can be read back by :func:`pymaize.compute_traits_from_descriptor`.
+   they can be read back by :func:`phenosuite.compute_traits_from_descriptor`.
 
 Locating the binary
 -------------------
@@ -38,7 +38,7 @@ Typical usage
 
 ::
 
-    from pymaize import MaizeGenerator, compute_traits_from_descriptor
+    from phenosuite import MaizeGenerator, compute_traits_from_descriptor
 
     gen = MaizeGenerator()  # locates Maize.exe automatically
     fitted = gen.derive_config(
@@ -82,7 +82,7 @@ _CONVENTIONAL_LOCATIONS: tuple[str, ...] = (
     "Maize.exe",
     "x64/Release/Maize.exe",
     "../MaizeProceduralModel/x64/Release/Maize.exe",
-    # User-home layout used by the PyMaize project setup
+    # User-home layout used by the PhenoSuite project setup
     "Documents/Research/MaizeProceduralModel/x64/Release/Maize.exe",
 )
 

@@ -2,7 +2,7 @@
 
 This module exposes a `Maize` class that mirrors the C ABI declared in
 ``MaizeModel/maize_c_api.h``. It loads the platform's pre-built shared library
-from ``pymaize/libs/``, validates the ABI version on construction, and offers
+from ``phenosuite/libs/``, validates the ABI version on construction, and offers
 a Pythonic interface for assembling tillers and leaves, rebuilding the mesh,
 and exporting OBJ / descriptor XML.
 
@@ -122,7 +122,7 @@ class Maize:
     ----------
     library_path:
         Optional explicit path to the shared library. If omitted, the wrapper
-        searches ``pymaize/libs/`` first, then ``MaizeModel/`` build outputs.
+        searches ``phenosuite/libs/`` first, then ``MaizeModel/`` build outputs.
     """
 
     def __init__(self, library_path: Optional[str] = None):
@@ -193,6 +193,15 @@ class Maize:
             "or MaizeModel/build_api.bat (Windows)."
         )
 
+    # The DLL search path is a property of the *process*, not of an instance, so
+    # directories are registered once and shared. Previously every Maize() added
+    # its own cookies and close() never released them; a few hundred instances --
+    # ordinary batch work over a plant corpus -- exhausted the process-wide slots,
+    # and the next library to call os.add_dll_directory (numpy, pandas, sklearn)
+    # failed with WinError 206. Keyed by resolved path so a non-default
+    # library_path still registers its own directory exactly once.
+    _dll_dirs_added: dict = {}
+
     def _add_windows_dll_dirs(self, candidate: Path) -> None:
         if platform.system() != "Windows" or not hasattr(os, "add_dll_directory"):
             return
@@ -222,10 +231,14 @@ class Maize:
             if resolved in seen:
                 continue
             seen.add(resolved)
+            if resolved in Maize._dll_dirs_added:
+                continue
             try:
-                self._dll_dir_handles.append(os.add_dll_directory(resolved))
+                cookie = os.add_dll_directory(resolved)
             except OSError:
-                pass
+                continue
+            Maize._dll_dirs_added[resolved] = cookie
+            self._dll_dir_handles.append(cookie)
 
     def _bind_api(self):
         lib = self._lib
@@ -484,7 +497,7 @@ class Maize:
         - ``leaf_length`` (float, meters)
         - ``leaf_angle`` (``{azimuth_deg, inclination_deg}``)
 
-        See :func:`pymaize.compute_traits_from_descriptor` for the equivalent
+        See :func:`phenosuite.compute_traits_from_descriptor` for the equivalent
         pure-Python computation directly from a descriptor XML.
         """
         if not self._handle:

@@ -184,7 +184,7 @@ def _parse_spline_attributes(parent: ET.Element, name: str) -> List[Vec3]:
 class LeafDesc:
     """Parsed representation of a ``<leaf>`` descriptor element.
 
-    Distinct from :class:`pymaize.wrapper.LeafDesc` (the ctypes struct used
+    Distinct from :class:`phenosuite.wrapper.LeafDesc` (the ctypes struct used
     by the C ABI): this dataclass is the parser-side model used by the
     pure-Python trait pipeline. Field semantics match
     ``DESCRIPTOR_FORMAT.md`` and the authoritative C++ ``LeafDesc`` struct
@@ -225,7 +225,7 @@ class LeafDesc:
 class TillerDesc:
     """Parsed representation of a ``<Tiller>`` descriptor element.
 
-    Distinct from :class:`pymaize.wrapper.TillerDesc` (the ctypes struct used
+    Distinct from :class:`phenosuite.wrapper.TillerDesc` (the ctypes struct used
     by the C ABI). Holds the parsed tiller parameters plus its list of
     :class:`LeafDesc` children. Field semantics match ``DESCRIPTOR_FORMAT.md``.
     """

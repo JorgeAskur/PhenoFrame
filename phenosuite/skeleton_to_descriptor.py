@@ -1,24 +1,24 @@
-"""Convert a 3D voxel skeleton into a PyMaize descriptor / spline representation.
+"""Convert a 3D voxel skeleton into a PhenoSuite descriptor / spline representation.
 
 Pipeline:
 
 1. Segment the skeleton into stem and per-leaf voxel sets (delegates to
-   :mod:`pymaize.skeleton_traits`).
+   :mod:`phenosuite.skeleton_traits`).
 2. Compute the stem's principal directions via PCA; rotate the whole
-   skeleton so the stem axis aligns with PyMaize's world Y axis (the
+   skeleton so the stem axis aligns with PhenoSuite's world Y axis (the
    convention used throughout the descriptor format and trait extractor).
 3. Per leaf, order voxels by graph distance from the leaf-stem junction
    and downsample to a small set of control points for the leaf's center
    spline.
 4. Either return the leaf splines as world-coordinate point lists (which
-   can be fed directly to :func:`pymaize.traits._leaf_traits_from_center_spline`)
-   or write a full PyMaize descriptor XML with ``useCtrlOverrides=1`` and
+   can be fed directly to :func:`phenosuite.traits._leaf_traits_from_center_spline`)
+   or write a full PhenoSuite descriptor XML with ``useCtrlOverrides=1`` and
    ``<ctrlCenter>`` elements for each leaf.
 
 The spline representation uses world Y-up meters: voxel ``k`` axis maps
 to world ``Y``; voxel ``i`` and ``j`` map to world ``X`` and ``Z`` after
-the stem-alignment rotation. This matches PyMaize's documented coordinate
-convention so that the values returned by the standard PyMaize trait
+the stem-alignment rotation. This matches PhenoSuite's documented coordinate
+convention so that the values returned by the standard PhenoSuite trait
 extractor are directly comparable to Mathieu/Jensina's ``θ`` (= 90° −
 ``inclination_deg``) and ``φ`` (= ``azimuth_deg``).
 """
@@ -43,7 +43,7 @@ from .skeleton_traits import (
 
 
 DEFAULT_VOXEL_SIZE_M = 0.002    # 2 mm/voxel — matches the Sorghum dataset's ~1m plant in 512^3
-DEFAULT_N_LEAF_CTRL = 4         # number of control points per leaf spline (matches PyMaize default)
+DEFAULT_N_LEAF_CTRL = 4         # number of control points per leaf spline (matches PhenoSuite default)
 DEFAULT_FIT_LEAF_CTRL = 12      # higher resolution for inverse fitting (captures S-curves)
 
 
@@ -58,7 +58,7 @@ def stem_aligned_rotation(
 ) -> tuple[np.ndarray, np.ndarray]:
     """Return ``(R, centroid)`` such that ``(voxels - centroid) @ R.T`` puts the stem along world +Y.
 
-    R is a 3×3 rotation matrix taking voxel-space coordinates to PyMaize world
+    R is a 3×3 rotation matrix taking voxel-space coordinates to PhenoSuite world
     coordinates: stem PCA primary direction → +Y; PCA secondary → +X; the
     third axis (right-handed) → +Z. The stem-voxel centroid is subtracted
     so the plant is centered on the world origin's horizontal plane.
@@ -155,7 +155,7 @@ def skeleton_to_leaf_splines(
     voxel_size_m: float = DEFAULT_VOXEL_SIZE_M,
     include_junction: bool = True,
 ) -> tuple[list[list[tuple[float, float, float]]], list[int]]:
-    """Segment a skeleton, build per-leaf center splines in PyMaize world coords.
+    """Segment a skeleton, build per-leaf center splines in PhenoSuite world coords.
 
     Parameters
     ----------
@@ -171,12 +171,12 @@ def skeleton_to_leaf_splines(
         Physical size of one voxel edge in meters.
     include_junction:
         If True, the junction stem voxel is prepended as control point 0
-        (PyMaize convention: ``center[0]`` is the leaf-stem connection point).
+        (PhenoSuite convention: ``center[0]`` is the leaf-stem connection point).
 
     Returns
     -------
     leaf_splines, leaf_voxel_counts
-        ``leaf_splines[i]`` is a list of ``(x, y, z)`` tuples in PyMaize world
+        ``leaf_splines[i]`` is a list of ``(x, y, z)`` tuples in PhenoSuite world
         meters. ``leaf_voxel_counts[i]`` is the original number of skeleton
         voxels making up the leaf (before downsampling), useful for QC.
     """
@@ -206,24 +206,24 @@ def skeleton_to_leaf_splines(
 
 
 # ---------------------------------------------------------------------------
-# Trait extraction via PyMaize
+# Trait extraction via PhenoSuite
 # ---------------------------------------------------------------------------
 
-def extract_traits_via_pymaize(
+def extract_traits_via_phenosuite(
     voxels: np.ndarray,
     n_leaf_ctrl: int = DEFAULT_N_LEAF_CTRL,
     vertical_axis: int = DEFAULT_VERTICAL_AXIS,
     voxel_size_m: float = DEFAULT_VOXEL_SIZE_M,
 ) -> pd.DataFrame:
-    """End-to-end: skeleton voxels → PyMaize spline → PyMaize trait extractor.
+    """End-to-end: skeleton voxels → PhenoSuite spline → PhenoSuite trait extractor.
 
     Returns a DataFrame with one row per leaf, sorted bottom-to-top by junction
     height. Columns:
 
     - ``leaf_index`` (int)
     - ``leaf_length_m`` (float, meters)
-    - ``azimuth_deg`` (PyMaize convention, ``[0, 360)``)
-    - ``inclination_deg`` (PyMaize, angle of base tangent above horizontal)
+    - ``azimuth_deg`` (PhenoSuite convention, ``[0, 360)``)
+    - ``inclination_deg`` (PhenoSuite, angle of base tangent above horizontal)
     - ``theta`` — Mathieu/Jensina's ``θ`` ``= 90° − inclination_deg``
     - ``phi`` — Mathieu/Jensina's ``φ``, mapped from ``azimuth_deg`` to ``(-180°, 180°]``
     - ``leaf_voxel_count`` — number of skeleton voxels (pre-downsampling)
@@ -245,10 +245,10 @@ def extract_traits_via_pymaize(
             continue
         traits = _leaf_traits_from_center_spline(spline)
         azimuth = traits["leaf_angle"]["azimuth_deg"]                  # [0, 360)
-        # PyMaize's azimuth is atan2(tz, tx) — rotation around +Y is one chirality;
+        # PhenoSuite's azimuth is atan2(tz, tx) — rotation around +Y is one chirality;
         # Mathieu/Jensina's φ uses the opposite rotational direction (empirically
         # verified by 6× drop in median |Δφ| against gold when sign is negated).
-        # So Mathieu's φ = − PyMaize's azimuth, then wrap to (-180°, 180°].
+        # So Mathieu's φ = − PhenoSuite's azimuth, then wrap to (-180°, 180°].
         phi = ((180.0 - azimuth) % 360.0) - 180.0
         inclination = traits["leaf_angle"]["inclination_deg"]
         rows.append({
@@ -345,7 +345,7 @@ def _estimate_stem_base_y(
     vertical_axis: int = DEFAULT_VERTICAL_AXIS,
     voxel_size_m: float = DEFAULT_VOXEL_SIZE_M,
 ) -> float:
-    """Estimate the basal stem Y coordinate in the PyMaize-aligned frame."""
+    """Estimate the basal stem Y coordinate in the PhenoSuite-aligned frame."""
     seg = segment_skeleton(voxels, vertical_axis=vertical_axis)
     R, centroid = stem_aligned_rotation(voxels, seg.stem_indices, vertical_axis)
     stem_world = voxel_to_world(voxels[seg.stem_indices], R, centroid, voxel_size_m)
@@ -358,7 +358,7 @@ def _leaf_local_basis(
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Build the (blade_x, blade_y, blade_z) orthonormal basis.
 
-    Matches the frame used by ``_world_leaf_center`` in :mod:`pymaize.traits`:
+    Matches the frame used by ``_world_leaf_center`` in :mod:`phenosuite.traits`:
     blade_y = stem tangent, blade_z = radial direction, blade_x = tangential.
     """
     blade_y = stem_dir / np.linalg.norm(stem_dir)
@@ -425,7 +425,7 @@ def fit_procedural_params(
     :func:`skeleton_to_leaf_splines`), find the ``leaf_angle`` and
     ``droopiness`` values that best reproduce the observed spline shape
     when run through the forward procedural model
-    (:func:`pymaize.traits._build_leaf_center_local`).
+    (:func:`phenosuite.traits._build_leaf_center_local`).
 
     ``leaf_curl`` is always returned as 0.0 because curl does not affect
     the center spline in the authoritative C++ model — it only modifies
@@ -442,7 +442,7 @@ def fit_procedural_params(
     Parameters
     ----------
     world_spline:
-        List of ``(x, y, z)`` tuples in PyMaize world metres (Y-up).
+        List of ``(x, y, z)`` tuples in PhenoSuite world metres (Y-up).
         ``world_spline[0]`` is the stem-leaf connection point.
     stem_direction:
         Unit vector of the stem at this leaf's junction (default ``+Y``).
@@ -645,7 +645,7 @@ def skeleton_to_procedural_xml(
 ) -> pd.DataFrame:
     """Skeleton -> procedural descriptor XML (``useCtrlOverrides=0``).
 
-    Writes a full PyMaize descriptor with fitted procedural parameters
+    Writes a full PhenoSuite descriptor with fitted procedural parameters
     for each leaf. The descriptor can be loaded by the C++ engine or
     the Python trait pipeline to regenerate geometry or extract traits.
 
@@ -714,7 +714,7 @@ def skeleton_to_override_xml(
 ) -> list[list[tuple[float, float, float]]]:
     """Skeleton -> spline-override descriptor XML (``useCtrlOverrides=1``).
 
-    Writes a full PyMaize descriptor where each leaf carries its center
+    Writes a full PhenoSuite descriptor where each leaf carries its center
     spline as ``<ctrlCenter>`` control points in the leaf-local frame
     (the same frame that ``_build_leaf_center_local`` generates into).
     The C++ engine and Python trait pipeline transform these local points
@@ -815,7 +815,7 @@ def skeleton_to_point_cloud_obj(
 ) -> None:
     """Export a voxel skeleton as a point-cloud OBJ (vertices only, no faces).
 
-    The skeleton is rotated to PyMaize's Y-up world frame using the same
+    The skeleton is rotated to PhenoSuite's Y-up world frame using the same
     stem-alignment transform as the descriptor pipeline, so the point
     cloud is spatially registered with OBJ meshes produced from
     descriptors.
@@ -827,6 +827,6 @@ def skeleton_to_point_cloud_obj(
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with open(output_path, "w") as f:
-        f.write("# Skeleton point cloud (PyMaize Y-up world frame)\n")
+        f.write("# Skeleton point cloud (PhenoSuite Y-up world frame)\n")
         for x, y, z in world:
             f.write(f"v {x:.6f} {y:.6f} {z:.6f}\n")

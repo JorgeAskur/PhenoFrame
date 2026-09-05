@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  XML Schema for the PyMaize plant descriptor format.
+  XML Schema for the PhenoSuite plant descriptor format.
 
   Validates the structure and required attributes of <plant> documents. 
   Numeric attributes are typed but not range-checked beyond the C++ 
@@ -65,18 +65,27 @@
       <xs:attribute name="leafLength" type="xs:float" use="required"/>
       <xs:attribute name="leafWidth" type="xs:float" use="required"/>
       <xs:attribute name="leafAngle" type="xs:float" use="required"/>
-      <xs:attribute name="droopiness" type="xs:float" default="0.0"/>
+      <xs:attribute name="leafAzimuthDeg" type="xs:float"/>
+      <xs:attribute name="droopiness" type="xs:float" default="0.5"/>
       <xs:attribute name="stemInclinationDeg" type="xs:float" default="0.0"/>
       <xs:attribute name="splinePoints" type="xs:integer" default="4"/>
       <xs:attribute name="widthTaper" type="xs:float" default="1.0"/>
       <xs:attribute name="leafTwist" type="xs:float" default="0.0"/>
       <xs:attribute name="leafCurl" type="xs:float" default="0.0"/>
+      <xs:attribute name="midribWidth" type="xs:float" default="0.075"/>
+      <xs:attribute name="midribTipTaperStart" type="xs:float" default="0.75"/>
+      <xs:attribute name="midribTextureStrength" type="xs:float" default="0.35"/>
       <xs:attribute name="waveLAmp" type="xs:float" default="0.0"/>
       <xs:attribute name="waveLFreq" type="xs:float" default="0.0"/>
       <xs:attribute name="waveLPhase" type="xs:float" default="0.0"/>
       <xs:attribute name="waveRAmp" type="xs:float" default="0.0"/>
       <xs:attribute name="waveRFreq" type="xs:float" default="0.0"/>
       <xs:attribute name="waveRPhase" type="xs:float" default="0.0"/>
+      <xs:attribute name="surfaceNoiseAmp" type="xs:float" default="0.01"/>
+      <xs:attribute name="surfaceNoiseFreq" type="xs:float" default="8.0"/>
+      <xs:attribute name="liguleWrapLengthScale" type="xs:float" default="6.8"/>
+      <xs:attribute name="liguleUnfoldSharpness" type="xs:float" default="2.2"/>
+      <xs:attribute name="sheathOuterScale" type="xs:float" default="1.12"/>
       <xs:attribute name="useCtrlOverrides" type="xs:integer" default="0"/>
     </xs:complexType>
   </xs:element>

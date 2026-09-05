@@ -1,4 +1,4 @@
-"""PyMaize: procedural maize plant modeling and phenotyping trait computation."""
+"""PhenoSuite: procedural maize plant modeling and phenotyping trait computation."""
 
 from ._version import __version__
 from .wrapper import (
