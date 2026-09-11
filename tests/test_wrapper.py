@@ -13,8 +13,8 @@ from pathlib import Path
 
 import pytest
 
-from pymaize import Leaf, Maize, Tiller
-from pymaize.wrapper import EXPECTED_C_API_VERSION, LeafDesc, LeafSplineTraits, TillerDesc
+from phenosuite import Leaf, Maize, Tiller
+from phenosuite.wrapper import EXPECTED_C_API_VERSION, LeafDesc, LeafSplineTraits, TillerDesc
 
 from .conftest import requires_wrapper
 

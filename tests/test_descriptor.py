@@ -18,7 +18,7 @@ from pathlib import Path
 
 import pytest
 
-from pymaize import Leaf, Maize, Tiller, compute_traits_from_descriptor
+from phenosuite import Leaf, Maize, Tiller, compute_traits_from_descriptor
 
 from .conftest import requires_wrapper
 

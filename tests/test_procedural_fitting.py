@@ -11,8 +11,8 @@ import math
 import numpy as np
 import pytest
 
-from pymaize.traits import LeafDesc, _build_leaf_center_local
-from pymaize.skeleton_to_descriptor import (
+from phenosuite.traits import LeafDesc, _build_leaf_center_local
+from phenosuite.skeleton_to_descriptor import (
     fit_procedural_params,
     _resample_polyline,
     _estimate_base_tangent,

@@ -1,13 +1,13 @@
-# PyMaize Plant Descriptor Format
+# PhenoSuite Plant Descriptor Format
 
 Version: 1.0 (matches `MAIZE_C_API_VERSION_MAJOR = 1`)
 
 This document specifies the XML descriptor format consumed by both the C++
 geometry engine (`maize_load_xml` in `MaizeModel/maize_c_api.h`) and the
-pure-Python trait pipeline (`pymaize.compute_traits_from_descriptor`).
+pure-Python trait pipeline (`phenosuite.compute_traits_from_descriptor`).
 
 A formal XSD is provided alongside this document at
-[`pymaize/schemas/descriptor.xsd`](pymaize/schemas/descriptor.xsd).
+[`phenosuite/schemas/descriptor.xsd`](phenosuite/schemas/descriptor.xsd).
 
 ## Document outline
 
@@ -90,8 +90,9 @@ A single blade attached to the stem.
 | `distance` | float | required | Internode length below this leaf, meters. |
 | `leafLength` | float | required | Total blade length along the midrib, meters. Ignored when `useCtrlOverrides=1`. |
 | `leafWidth` | float | required | Maximum blade width, meters. |
-| `leafAngle` | float | required | Insertion angle of the blade relative to the stem, degrees. Ignored when `useCtrlOverrides=1`. |
-| `droopiness` | float | `0.0` | Gravity-pull factor; negative values curl the tip downward. Ignored when `useCtrlOverrides=1`. |
+| `leafAngle` | float | required | Insertion angle of the blade: angle between the base midrib tangent and the horizontal direction perpendicular to the stem, degrees (`0` = horizontal, `90` = parallel to the stem). Ignored when `useCtrlOverrides=1`. |
+| `leafAzimuthDeg` | float | optional | Azimuthal orientation of the leaf around the stem axis, degrees. When omitted, the azimuth is derived from the tiller `beta` step times the leaf index plus the deterministic per-leaf azimuth noise. |
+| `droopiness` | float | `0.5` | Tip-droop amplitude; the base tangent is progressively rotated in the leaf's radial–vertical plane toward the tip. Ignored when `useCtrlOverrides=1`. |
 | `stemInclinationDeg` | float | `0.0` | Per-leaf bend of the stem segment that immediately precedes this leaf, degrees. |
 | `splinePoints` | int | `4` | Number of control points used to build the procedural midrib. **Clamped to [4, 40] on load.** The Python parser emits a `UserWarning` when clamping. |
 | `widthTaper` | float | `1.0` | Width-profile shape exponent (higher = sharper tip). |
@@ -102,6 +103,26 @@ A single blade attached to the stem.
 | `useCtrlOverrides` | int (0/1) | `0` | If `1`, supply explicit midrib control points via `<ctrlCenter>` (and the procedural parameters above are bypassed). |
 
 May contain at most one `<ctrlCenter>` child.
+
+#### Blade-shape and rendering attributes (optional)
+
+The following `<leaf>` attributes refine the rendered mesh. They are consumed
+by the C++ geometry engine; the pure-Python trait pipeline ignores them, and
+they do **not** change the extracted traits (length, angle, azimuth, connection
+and tip positions). All are optional and fall back to the engine defaults below.
+
+| Attribute | Type | Default | Meaning |
+|---|---|---|---|
+| `midribWidth` | float | `0.075` | Standard deviation of the Gaussian midrib mask (relative midrib prominence). |
+| `midribTipTaperStart` | float | `0.75` | Fraction of the blade length at which the midrib taper toward the tip begins. |
+| `midribTextureStrength` | float | `0.35` | UV compression around the midrib, for visual realism. |
+| `surfaceNoiseAmp` | float | `0.01` | Amplitude of additive surface noise. |
+| `surfaceNoiseFreq` | float | `8.0` | Spatial frequency of the surface noise. |
+| `liguleWrapLengthScale` | float | `6.8` | Collar wrap length relative to the stem radius. |
+| `liguleUnfoldSharpness` | float | `2.2` | Exponent controlling the sharpness of the ligule unfolding curve. |
+| `sheathOuterScale` | float | `1.12` | Sheath outer radius as a multiple of the stem radius at the collar. |
+
+The `waveL*` / `waveR*` edge-noise attributes above are likewise rendering-only.
 
 ### `<stemCtrl>` and `<ctrlCenter>` (spline control payloads)
 
@@ -131,7 +152,7 @@ interpolation.
 To validate a descriptor against the schema with `xmllint`:
 
 ```bash
-xmllint --noout --schema pymaize/schemas/descriptor.xsd path/to/plant.xml
+xmllint --noout --schema phenosuite/schemas/descriptor.xsd path/to/plant.xml
 ```
 
 The Python pipeline does not enforce the schema at runtime — it tolerates

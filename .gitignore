@@ -6,6 +6,8 @@ __pycache__/
 build/
 dist/
 .pytest_cache/
+.venv/
+venv/
 
 # Generated outputs
 plants/*.obj
@@ -16,12 +18,24 @@ traits.xml
 examples/output/
 .ipynb_checkpoints/
 
-# Experiment outputs (figures, intermediate CSVs, fitted descriptors)
-experiments/*/figures/
-experiments/*/outputs/
-experiments/*/fitted_descriptors/
+# Experiment outputs (figures, intermediate CSVs, fitted descriptors) — the
+# experiment notebooks and scripts ARE tracked; their generated artifacts are not.
+experiments/**/figures/
+experiments/**/outputs*/
+experiments/**/fitted_descriptors/
+experiments/**/_executed*/
+
+# Regenerable C++ plant exports (deterministic, rebuilt via _gen_plantscpp.py /
+# MaizeGenerator) — do not commit the meshes/descriptors themselves.
+experiments/PlantsC++/
+experiments/**/plant_export*/
+
+# Local convenience junction (mklink /J 01_phyllotaxis -> results); the real
+# notebooks live in results/. Committing the junction would duplicate them.
+experiments/experiments/01_phyllotaxis/
 
 # Local user data (external datasets are never redistributed)
+experiments/**/data/external/
 experiments/data/external/
 
 # IDE / tool config
@@ -33,7 +47,11 @@ experiments/data/external/
 Thumbs.db
 .DS_Store
 
-# Build artifacts (keep bundled binaries in pymaize/libs/ for distribution)
+# Logs and local build backups
+*.log
+*.bak
+
+# Build artifacts (keep bundled binaries in phenosuite/libs/ for distribution)
 MaizeModel/build/
 
 # Sorghum (separate project)
@@ -41,5 +59,6 @@ SorghumModel/
 SorghumWrapper.py
 test_SorghumPM.py
 
-# Keeping this private for now
-experiments/
+# The stochastic generator lives in its own repository (MaizeProceduralModel),
+# consumed here via the phenosuite.MaizeGenerator wrapper — not vendored in.
+MaizeProceduralModel/
