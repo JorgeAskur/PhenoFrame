@@ -1,6 +1,6 @@
 # PhenoFrame
 
-Toolkit for procedural maize plant modeling and phenotyping trait computation.
+Toolkit for descriptor-based procedural maize plant modeling and phenotyping trait computation.
 
 ## Overview
 
