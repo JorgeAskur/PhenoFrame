@@ -1,16 +1,16 @@
-# PhenoSuite
+# PhenoFrame
 
 Toolkit for procedural maize plant modeling and phenotyping trait computation.
 
 ## Overview
 
-PhenoSuite provides three main capabilities:
+PhenoFrame provides three main capabilities:
 
 1. **Procedural Plant Generation** — Build 3D maize plant meshes (OBJ) from parametric descriptions via a Python wrapper around a C++ geometry engine. The Python wrapper exposes all geometry-related parameters from the C++ engine (26 per-leaf attributes including surface noise, midrib geometry, ligule shaping, and wave parameters) and defaults to maximum mesh resolution (200x200 tessellation density).
 2. **Trait Computation** — Compute leaf-level phenotyping traits (leaf length, angle, connection point, tip position) from plant descriptor XML files using either the C++ engine or a pure-Python forward model. Both pipelines produce functionally identical results (length MAE = 0.0001 mm, inclination MAE = 0.0015°).
-3. **Stochastic Plant Generation** — Sample synthetic descriptor populations from a hierarchical model (4 latent factors + per-node canopy curves + whorl compression) implemented in the sibling C++ `MaizeGenerator` project. A thin Python wrapper (`phenosuite.MaizeGenerator`) handles binary discovery, config-XML derivation from population statistics, and batch invocation of `Maize.exe --headless` — no manual subprocess plumbing required.
+3. **Stochastic Plant Generation** — Sample synthetic descriptor populations from a hierarchical model (4 latent factors + per-node canopy curves + whorl compression) implemented in the sibling C++ `MaizeGenerator` project. A thin Python wrapper (`phenoframe.MaizeGenerator`) handles binary discovery, config-XML derivation from population statistics, and batch invocation of `Maize.exe --headless` — no manual subprocess plumbing required.
 
-The descriptor format is documented in [`DESCRIPTOR_FORMAT.md`](DESCRIPTOR_FORMAT.md), with a formal XSD at [`phenosuite/schemas/descriptor.xsd`](phenosuite/schemas/descriptor.xsd).
+The descriptor format is documented in [`DESCRIPTOR_FORMAT.md`](DESCRIPTOR_FORMAT.md), with a formal XSD at [`phenoframe/schemas/descriptor.xsd`](phenoframe/schemas/descriptor.xsd).
 
 ## Requirements
 
@@ -23,7 +23,7 @@ The package targets Python 3.10–3.13 on Linux, Windows, and macOS; the test su
 
 ## Installation
 
-The core package — mesh generation (`phenosuite.Maize`), trait extraction (`compute_traits_from_descriptor`), and the stochastic-generator wrapper (`MaizeGenerator`) — has no required runtime Python dependencies. The skeleton-to-descriptor conversion module (`phenosuite.skeleton_to_descriptor`, `phenosuite.skeleton_traits`) additionally requires **NumPy**, **SciPy**, and **pandas**; install them with the `[conversion]` extra (`pip install phenosuite[conversion]`), also included in `[experiments]`. `pytest` is only needed to run the test suite, and `matplotlib` / `jupyter` are only needed for the example notebook (both pulled in via the `[examples]` extra).
+The core package — mesh generation (`phenoframe.Maize`), trait extraction (`compute_traits_from_descriptor`), and the stochastic-generator wrapper (`MaizeGenerator`) — has no required runtime Python dependencies. The skeleton-to-descriptor conversion module (`phenoframe.skeleton_to_descriptor`, `phenoframe.skeleton_traits`) additionally requires **NumPy**, **SciPy**, and **pandas**; install them with the `[conversion]` extra (`pip install phenoframe[conversion]`), also included in `[experiments]`. `pytest` is only needed to run the test suite, and `matplotlib` / `jupyter` are only needed for the example notebook (both pulled in via the `[examples]` extra).
 
 ### From source
 
@@ -52,7 +52,7 @@ chmod +x MaizeModel/build_api.sh
 ./MaizeModel/build_api.sh
 ```
 
-The build script auto-detects the platform and writes `libmaize_c_api.{so,dylib}` directly into `phenosuite/libs/`, where the wrapper looks for it first.
+The build script auto-detects the platform and writes `libmaize_c_api.{so,dylib}` directly into `phenoframe/libs/`, where the wrapper looks for it first.
 
 For an explicit manual build:
 
@@ -60,7 +60,7 @@ For an explicit manual build:
 g++ -shared -fPIC -O2 -std=c++17 -DMAIZE_C_API_BUILD \
     MaizeModel/maize_c_api.cpp MaizeModel/Maize.cpp MaizeModel/Descriptor.cpp \
     MaizeModel/vect3d.cpp MaizeModel/tinyxml2.cpp \
-    -IMaizeModel -o phenosuite/libs/libmaize_c_api.so
+    -IMaizeModel -o phenoframe/libs/libmaize_c_api.so
 ```
 
 ### Building the C++ library (Windows / MSYS2)
@@ -69,7 +69,7 @@ g++ -shared -fPIC -O2 -std=c++17 -DMAIZE_C_API_BUILD \
 MaizeModel\build_api.bat
 ```
 
-The script expects `g++` from MSYS2 / MinGW on the `PATH`. The pre-built DLL shipped in `phenosuite/libs/maize_c_api.dll` is functionally equivalent.
+The script expects `g++` from MSYS2 / MinGW on the `PATH`. The pre-built DLL shipped in `phenoframe/libs/maize_c_api.dll` is functionally equivalent.
 
 ## Coordinate frame
 
@@ -89,7 +89,7 @@ For a leaf trait dict, `connection_point` is the leaf-stem junction, `tip_positi
 ### Generate a plant from code
 
 ```python
-from phenosuite import Maize, Tiller, Leaf
+from phenoframe import Maize, Tiller, Leaf
 
 with Maize() as gen:
     gen.reset()
@@ -111,7 +111,7 @@ with Maize() as gen:
 ### Load a plant from XML and export
 
 ```python
-from phenosuite import from_xml_to_obj
+from phenoframe import from_xml_to_obj
 
 from_xml_to_obj("plants/plant_0.xml", "plants/output")
 ```
@@ -120,7 +120,7 @@ from_xml_to_obj("plants/plant_0.xml", "plants/output")
 
 ```python
 from pathlib import Path
-from phenosuite import compute_traits_from_descriptor
+from phenoframe import compute_traits_from_descriptor
 
 traits = compute_traits_from_descriptor(Path("plants/plant_0.xml"))
 for t in traits:
@@ -129,7 +129,7 @@ for t in traits:
 
 ## API reference
 
-### Procedural model — `phenosuite.Maize`
+### Procedural model — `phenoframe.Maize`
 
 | Method | Description |
 |---|---|
@@ -168,9 +168,9 @@ for t in traits:
 | `compute_traits_from_descriptor(xml_path) -> list[dict]` | Parse a descriptor XML and return one trait dict per leaf. |
 | `write_traits_xml(out_path, source_descriptor, traits)` | Serialize traits to a flat XML for downstream pipelines. |
 
-### Stochastic generator wrapper — `phenosuite.MaizeGenerator`
+### Stochastic generator wrapper — `phenoframe.MaizeGenerator`
 
-Wraps the C++ `MaizeGenerator` from the sibling [`MaizeProceduralModel`](https://github.com/) project via its headless CLI. PhenoSuite does not ship the binary; the wrapper discovers an existing build at construction time.
+Wraps the C++ `MaizeGenerator` from the sibling [`MaizeProceduralModel`](https://github.com/) project via its headless CLI. PhenoFrame does not ship the binary; the wrapper discovers an existing build at construction time.
 
 | Method | Description |
 |---|---|
@@ -183,7 +183,7 @@ Wraps the C++ `MaizeGenerator` from the sibling [`MaizeProceduralModel`](https:/
 Minimal example:
 
 ```python
-from phenosuite import MaizeGenerator, compute_traits_from_descriptor
+from phenoframe import MaizeGenerator, compute_traits_from_descriptor
 
 gen = MaizeGenerator()  # locates Maize.exe automatically
 gen.derive_config(
@@ -220,14 +220,14 @@ traits = [compute_traits_from_descriptor(p) for p in xml_paths]
 
 | Symbol | Description |
 |---|---|
-| `phenosuite.__version__` | Package version (currently `"0.1.0"`). |
-| `phenosuite.wrapper.EXPECTED_C_API_VERSION` | The C-ABI version this Python wrapper expects (currently `(1, 1, 0)`). |
-| `phenosuite.wrapper.CApiVersionMismatch` | Raised on major-version mismatch or struct-layout mismatch between the loaded shared library and the Python wrapper. |
+| `phenoframe.__version__` | Package version (currently `"0.1.0"`). |
+| `phenoframe.wrapper.EXPECTED_C_API_VERSION` | The C-ABI version this Python wrapper expects (currently `(1, 1, 0)`). |
+| `phenoframe.wrapper.CApiVersionMismatch` | Raised on major-version mismatch or struct-layout mismatch between the loaded shared library and the Python wrapper. |
 
 ## Project structure
 
 ```
-phenosuite/                   # Importable Python package
+phenoframe/                   # Importable Python package
   __init__.py              # Public API re-exports
   _version.py              # __version__
   wrapper.py               # ctypes wrapper around the C++ mesh engine
@@ -247,7 +247,7 @@ MaizeModel/                # C++ source for the geometry engine
   Descriptor.cpp / .h      # XML descriptor parser
   vect3d.cpp / .h          # Vector math
   tinyxml2.cpp / .h        # Bundled XML parser
-  build_api.bat / .sh      # Build scripts (output goes to phenosuite/libs/)
+  build_api.bat / .sh      # Build scripts (output goes to phenoframe/libs/)
 plants/                    # Sample data
   plant_0.xml              # Sample plant descriptor
   maize_leaf.png           # Leaf texture
