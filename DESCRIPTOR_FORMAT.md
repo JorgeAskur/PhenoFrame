@@ -1,13 +1,13 @@
-# PhenoSuite Plant Descriptor Format
+# PhenoFrame Plant Descriptor Format
 
 Version: 1.0 (matches `MAIZE_C_API_VERSION_MAJOR = 1`)
 
 This document specifies the XML descriptor format consumed by both the C++
 geometry engine (`maize_load_xml` in `MaizeModel/maize_c_api.h`) and the
-pure-Python trait pipeline (`phenosuite.compute_traits_from_descriptor`).
+pure-Python trait pipeline (`phenoframe.compute_traits_from_descriptor`).
 
 A formal XSD is provided alongside this document at
-[`phenosuite/schemas/descriptor.xsd`](phenosuite/schemas/descriptor.xsd).
+[`phenoframe/schemas/descriptor.xsd`](phenoframe/schemas/descriptor.xsd).
 
 ## Document outline
 
@@ -152,7 +152,7 @@ interpolation.
 To validate a descriptor against the schema with `xmllint`:
 
 ```bash
-xmllint --noout --schema phenosuite/schemas/descriptor.xsd path/to/plant.xml
+xmllint --noout --schema phenoframe/schemas/descriptor.xsd path/to/plant.xml
 ```
 
 The Python pipeline does not enforce the schema at runtime — it tolerates

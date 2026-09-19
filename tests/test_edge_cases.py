@@ -18,8 +18,8 @@ from xml.etree.ElementTree import ParseError
 
 import pytest
 
-from phenosuite import compute_traits_from_descriptor
-from phenosuite.traits import _parse_descriptor
+from phenoframe import compute_traits_from_descriptor
+from phenoframe.traits import _parse_descriptor
 
 
 def _write(xml_path: Path, body: str) -> Path:
@@ -175,7 +175,7 @@ class TestSchemaShippedWithPackage:
     def test_xsd_ships_with_package_and_is_well_formed(self) -> None:
         import xml.etree.ElementTree as ET
 
-        import phenosuite as pkg
+        import phenoframe as pkg
 
         xsd_path = Path(pkg.__file__).resolve().parent / "schemas" / "descriptor.xsd"
         assert xsd_path.exists(), f"XSD missing from package: {xsd_path}"

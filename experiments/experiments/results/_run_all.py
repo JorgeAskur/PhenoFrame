@@ -18,16 +18,13 @@ RESULTS = Path(__file__).resolve().parent
 OUTDIR = RESULTS / "_executed"
 OUTDIR.mkdir(exist_ok=True)
 
-# Run the kernel with cwd = the `01_phyllotaxis` junction (-> results), so the
-# notebooks' `Path.cwd().name == '01_phyllotaxis'` path logic resolves exactly
-# as in the original repo layout (REPO_ROOT, OUT, FIG all line up).
-JUNCTION = RESULTS.parent / "01_phyllotaxis"
-RUN_CWD = str(JUNCTION if JUNCTION.exists() else RESULTS)
+# The notebooks resolve the experiment root from the results/ working directory.
+RUN_CWD = str(RESULTS)
 
 ORDER = [
     "01_sec2.1_python_cpp_validation.ipynb",
     "02_sec2.1_descriptor_trait_validation.ipynb",
-    "03_sec2.2_phenosuite_traits_vs_gold.ipynb",
+    "03_sec2.2_phenoframe_traits_vs_gold.ipynb",
     "04_sec2.3_geometric_fidelity.ipynb",
     "05_sec2.3_procedural_round_trip.ipynb",
     "06_sec2.4_heritability.ipynb",

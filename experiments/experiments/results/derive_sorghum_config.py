@@ -8,7 +8,7 @@ an XML config of the form described in §4.2.2 of the paper:
   <traitLoadingsMatrix>         4-latent loadings (Vigor/Slenderness/Posture/Texture)
 
 This script reads `outputs/e5_fitted_params.csv`, fits the means/stds and
-canopy curves for the architectural parameters PhenoSuite can fit
+canopy curves for the architectural parameters PhenoFrame can fit
 (leafLength, leafAngle, droopiness, internode distance -> plant height),
 and writes a sorghum-flavored config. Visual / texture / non-fit
 architectural parameters (leafTwist, leafCurl, surface noise) inherit the
@@ -19,7 +19,7 @@ maize config -- those loadings encode biology (vigor -> large leaves +
 upright) that is roughly species-invariant.
 
 Run:
-    python experiments/01_phyllotaxis/derive_sorghum_config.py
+    python experiments/experiments/results/derive_sorghum_config.py
 """
 from __future__ import annotations
 
@@ -32,17 +32,14 @@ import pandas as pd
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
 
-from phenosuite import MaizeGenerator
+from phenoframe import MaizeGenerator
 
 # Outputs from E1b/E5 live alongside this script (the results/ notebook dir).
 OUT = Path(__file__).resolve().parent / "outputs"
 
 # Source maize config to inherit visual/texture defaults + loadings matrix.
-# On this machine the generator + its config live inside the repo under
-# MaizeProceduralModel/Release/ (set via PYMAIZE_GENERATOR_EXE).
-_GEN_DIR = Path(r"C:\Users\csuser\Documents\PhenoSuite\MaizeProceduralModel\Release")
-MAIZE_CFG = _GEN_DIR / "maize_generator_config.xml"
-SORGHUM_CFG_OUT = _GEN_DIR / "sorghum_generator_config.xml"
+MAIZE_CFG = REPO / "paper" / "configs" / "maize_generator_config.xml"
+SORGHUM_CFG_OUT = REPO / "paper" / "generated" / "sorghum_generator_config.xml"
 
 # ---------------------------------------------------------------------------
 # 1. Load E5 fitted parameters (same filter as E5 / E9)
@@ -128,7 +125,7 @@ droopiness_base,  droopiness_std,  dr_bot, dr_mid, dr_top = fit_curve("droopines
 # small droopiness correction (~2-3 deg) that we omit since the generator's
 # droopiness is sampled, not fixed.
 # ---------------------------------------------------------------------------
-e1b_for_angle = pd.read_csv(OUT / "e1b_per_leaf_phenosuite_vs_gold.csv")
+e1b_for_angle = pd.read_csv(OUT / "e1b_per_leaf_pymaize_vs_gold.csv")
 gold = e1b_for_angle[["plant_id", "leaf_index", "theta_gold"]].dropna().copy()
 gold = gold.merge(per_plant["n_leaves"].rename("plant_n_leaves"),
                   left_on="plant_id", right_index=True)
@@ -162,7 +159,7 @@ print(f"droopinessBase = {droopiness_base:.2f} +/- {droopiness_std:.2f}  "
 # ---------------------------------------------------------------------------
 # 4. Auto-calibrate tillerAzimuthNoise from real |Delta phi - 180| median
 # ---------------------------------------------------------------------------
-e1b = pd.read_csv(OUT / "e1b_per_leaf_phenosuite_vs_gold.csv")
+e1b = pd.read_csv(OUT / "e1b_per_leaf_pymaize_vs_gold.csv")
 _p = e1b[["plant_id", "leaf_index", "phi_gold"]].dropna().copy()
 _p = _p.sort_values(["plant_id", "leaf_index"])
 _p["phi_norm"] = _p["phi_gold"] % 360.0
@@ -192,7 +189,7 @@ print(f"Lower-half mean distance = {lower_mean:.3f} m  Upper-half mean = {upper_
 print(f"=> whorlMinInternodeWeight = {whorl_min_weight:.3f}")
 
 # ---------------------------------------------------------------------------
-# 6. Hand the canopy specs to phenosuite.MaizeGenerator to write the XML.
+# 6. Hand the canopy specs to phenoframe.MaizeGenerator to write the XML.
 #    The wrapper takes care of the element-name conventions
 #    (leafLengthBase -> leafLengthScaleCurve, leafAngleBase ->
 #    leafAngleOffsetCurve, droopinessBase -> droopinessOffsetCurve)

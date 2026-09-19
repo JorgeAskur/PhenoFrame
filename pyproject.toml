@@ -3,7 +3,7 @@ requires = ["setuptools>=61", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "phenosuite"
+name = "phenoframe"
 version = "0.1.0"
 description = "Procedural maize plant modeling and phenotyping trait computation"
 readme = "README.md"
@@ -31,30 +31,33 @@ dependencies = []
 
 [project.optional-dependencies]
 test = ["pytest>=7"]
-# Skeleton -> descriptor conversion (phenosuite.skeleton_to_descriptor,
-# phenosuite.skeleton_traits) needs the scientific stack; the core mesh/trait/
+# Skeleton -> descriptor conversion (phenoframe.skeleton_to_descriptor,
+# phenoframe.skeleton_traits) needs the scientific stack; the core mesh/trait/
 # generator API does not.
 conversion = ["numpy>=1.24", "scipy>=1.10", "pandas>=2"]
 examples = ["matplotlib>=3.7", "notebook>=7"]
 experiments = [
     "matplotlib>=3.7",
     "notebook>=7",
+    "nbclient>=0.8",
+    "nbformat>=5",
     "pandas>=2",
     "openpyxl>=3",
     "scipy>=1.10",
     "numpy>=1.24",
+    "statsmodels>=0.14",
 ]
 
 [project.urls]
-Repository = "https://github.com/JorgeAskur/PhenoSuite"
-Issues = "https://github.com/JorgeAskur/PhenoSuite/issues"
+Repository = "https://github.com/JorgeAskur/PhenoFrame"
+Issues = "https://github.com/JorgeAskur/PhenoFrame/issues"
 
 [tool.setuptools.packages.find]
-include = ["phenosuite*"]
+include = ["phenoframe*"]
 exclude = ["MaizeModel*", "plants*", "tests*", "experiments*", "examples*"]
 
 [tool.setuptools.package-data]
-phenosuite = ["libs/*.dll", "libs/*.so", "libs/*.dylib", "schemas/*.xsd"]
+phenoframe = ["libs/*.dll", "libs/*.so", "libs/*.dylib", "schemas/*.xsd"]
 
 [tool.pytest.ini_options]
 minversion = "7.0"

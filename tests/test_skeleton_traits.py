@@ -9,7 +9,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from phenosuite.skeleton_traits import (
+from phenoframe.skeleton_traits import (
     extract_traits_from_skeleton,
     segment_skeleton,
     _principal_directions,

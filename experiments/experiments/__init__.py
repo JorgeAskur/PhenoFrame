@@ -1,4 +1,4 @@
-"""Validation experiments for PhenoSuite against published sorghum/maize datasets.
+"""Validation experiments for PhenoFrame against published sorghum/maize datasets.
 
 Each subdirectory (e.g. `01_phyllotaxis/`) contains the notebooks, figures,
 and outputs for one experiment. Shared data-loading code lives in

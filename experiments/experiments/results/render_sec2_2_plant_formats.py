@@ -9,7 +9,7 @@ already in `outputs/visual_comparison/`; only the raw voxel grid is loaded
 fresh from the Zenodo archive.
 
 Run:
-    python experiments/01_phyllotaxis/render_sec2_2_plant_formats.py
+    python experiments/experiments/results/render_sec2_2_plant_formats.py
 """
 from __future__ import annotations
 
@@ -25,7 +25,7 @@ REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
 
 from experiments import data_loaders as dl  # noqa: E402
-from phenosuite.skeleton_to_descriptor import (  # noqa: E402
+from phenoframe.skeleton_to_descriptor import (  # noqa: E402
     segment_skeleton,
     stem_aligned_rotation,
     voxel_to_world,
@@ -33,8 +33,8 @@ from phenosuite.skeleton_to_descriptor import (  # noqa: E402
     DEFAULT_VERTICAL_AXIS,
 )
 
-OUT = REPO / 'experiments' / '01_phyllotaxis' / 'outputs'
-FIG = REPO / 'experiments' / '01_phyllotaxis' / 'figures'
+OUT = Path(__file__).resolve().parent / 'outputs'
+FIG = Path(__file__).resolve().parent / 'figures'
 VIS = OUT / 'visual_comparison'
 FIG.mkdir(exist_ok=True, parents=True)
 
@@ -101,7 +101,7 @@ print(f'  procedural:{len(proc_verts):,} verts, {len(proc_faces):,} faces')
 #
 # The voxel grid comes in 512^3 integer indices. The skeleton-derived
 # meshes are in metric Y-up world coordinates after a stem-aligned
-# rotation (see phenosuite.skeleton_to_descriptor.skeleton_to_point_cloud_obj).
+# rotation (see phenoframe.skeleton_to_descriptor.skeleton_to_point_cloud_obj).
 # We apply the exact same rotation + scale to the raw voxel grid so it
 # overlays in the same frame.
 # ---------------------------------------------------------------------------
@@ -126,7 +126,7 @@ bb_max = ALL_PTS.max(axis=0)
 ctr = 0.5 * (bb_min + bb_max)
 extent = (bb_max - bb_min).max() * 0.55  # pad so the plant fits comfortably
 
-# Y is "up" in PhenoSuite; we'll match that with matplotlib's z being "up" on screen
+# Y is "up" in PhenoFrame; we'll match that with matplotlib's z being "up" on screen
 # by swapping axes when plotting (x->X, z->Y_screen-depth, y->Z_screen-vertical).
 def set_axes(ax):
     ax.set_xlim(ctr[0] - extent, ctr[0] + extent)
@@ -143,7 +143,7 @@ def set_axes(ax):
 
 
 def plot_points(ax, P, color, size, alpha=1.0):
-    # P is Nx3 in (x, y_world_up, z) PhenoSuite frame; remap to mpl (x, z, y_up)
+    # P is Nx3 in (x, y_world_up, z) PhenoFrame frame; remap to mpl (x, z, y_up)
     ax.scatter(P[:, 0], P[:, 2], P[:, 1],
                s=size, c=color, alpha=alpha, marker='.',
                edgecolors='none', rasterized=True)

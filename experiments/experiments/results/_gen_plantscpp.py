@@ -5,13 +5,14 @@ from, so this is a faithful reproduction of the §2.1 validation population.
 import sys
 from pathlib import Path
 
-from phenosuite.generator import MaizeGenerator
+from phenoframe.generator import MaizeGenerator
 
-CFG = Path(r"C:\Users\csuser\Documents\PhenoSuite\MaizeProceduralModel\Release\maize_generator_config.xml")
-OUT = Path(r"C:\Users\csuser\Documents\PhenoSuite\experiments\experiments\results\PlantsC++")
+REPO = Path(__file__).resolve().parents[3]
+CFG = REPO / "paper" / "configs" / "maize_generator_config.xml"
+OUT = REPO / "experiments" / "PlantsC++"
 COUNT = int(sys.argv[1]) if len(sys.argv) > 1 else 500
 
-gen = MaizeGenerator()  # uses PYMAIZE_GENERATOR_EXE
+gen = MaizeGenerator()  # uses PHENOFRAME_GENERATOR_EXE when set
 print(f"exe: {gen.exe_path}", flush=True)
 print(f"config: {CFG}", flush=True)
 print(f"output: {OUT}", flush=True)

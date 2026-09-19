@@ -3,8 +3,8 @@
 Both datasets live outside the repo (we do not redistribute them). Override
 the defaults via environment variables when running on a different machine:
 
-    PYMAIZE_JENSINA_PATH  -> root of jdavis-132/phyllotaxy clone
-    PYMAIZE_VOXEL_PATH    -> root of the Sorghum voxel-reconstruction archive
+    PHENOFRAME_JENSINA_PATH  -> root of jdavis-132/phyllotaxy clone
+    PHENOFRAME_VOXEL_PATH    -> root of the Sorghum voxel-reconstruction archive
                               (the directory containing dataset/, reconstructed/, skeletons/)
 """
 
@@ -16,20 +16,20 @@ from pathlib import Path
 
 # Default fallbacks point at a sibling `datasets/` folder; override with the
 # environment variables below (recommended) to use datasets stored elsewhere.
-_DATA_ROOT = Path(os.environ.get("PYMAIZE_DATA_ROOT", Path.home() / "phenosuite_datasets"))
+_DATA_ROOT = Path(os.environ.get("PHENOFRAME_DATA_ROOT", os.environ.get("PYMAIZE_DATA_ROOT", Path.home() / "phenoframe_datasets")))
 
 JENSINA_REPO = Path(
     os.environ.get(
-        "PYMAIZE_JENSINA_PATH",
-        str(_DATA_ROOT / "phyllotaxy"),
+        "PHENOFRAME_JENSINA_PATH",
+        os.environ.get("PYMAIZE_JENSINA_PATH", str(_DATA_ROOT / "phyllotaxy")),
     )
 )
 JENSINA_DATA = JENSINA_REPO / "Data"
 
 VOXEL_ROOT = Path(
     os.environ.get(
-        "PYMAIZE_VOXEL_PATH",
-        str(_DATA_ROOT / "Sorghum"),
+        "PHENOFRAME_VOXEL_PATH",
+        os.environ.get("PYMAIZE_VOXEL_PATH", str(_DATA_ROOT / "Sorghum")),
     )
 )
 VOXEL_DATASET = VOXEL_ROOT / "dataset"
@@ -51,6 +51,6 @@ def assert_data_present() -> None:
         raise FileNotFoundError(
             "External datasets are missing on this machine. Either:\n"
             "  - install them at the default location, or\n"
-            "  - set PYMAIZE_JENSINA_PATH / PYMAIZE_VOXEL_PATH env vars.\n\n"
+            "  - set PHENOFRAME_JENSINA_PATH / PHENOFRAME_VOXEL_PATH env vars.\n\n"
             "Missing paths:\n" + "\n".join(missing)
         )

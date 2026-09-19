@@ -51,7 +51,7 @@ Thumbs.db
 *.log
 *.bak
 
-# Build artifacts (keep bundled binaries in phenosuite/libs/ for distribution)
+# Build artifacts (keep bundled binaries in phenoframe/libs/ for distribution)
 MaizeModel/build/
 
 # Sorghum (separate project)
@@ -60,5 +60,9 @@ SorghumWrapper.py
 test_SorghumPM.py
 
 # The stochastic generator lives in its own repository (MaizeProceduralModel),
-# consumed here via the phenosuite.MaizeGenerator wrapper — not vendored in.
+# consumed here via the phenoframe.MaizeGenerator wrapper — not vendored in.
 MaizeProceduralModel/
+
+# Paper inputs and scripts are tracked; generated runs and external checkout are local.
+paper/generated/
+external/

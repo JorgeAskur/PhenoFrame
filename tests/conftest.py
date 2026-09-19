@@ -1,4 +1,4 @@
-"""Shared pytest fixtures and helpers for the phenosuite test suite."""
+"""Shared pytest fixtures and helpers for the phenoframe test suite."""
 
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ SAMPLE_PLANT_XML = REPO_ROOT / "plants" / "plant_0.xml"
 def _wrapper_available() -> bool:
     """Return True when the C++ shared library can actually be loaded."""
     try:
-        from phenosuite import Maize  # noqa: WPS433 (intentional local import)
+        from phenoframe import Maize  # noqa: WPS433 (intentional local import)
 
         with Maize():
             return True

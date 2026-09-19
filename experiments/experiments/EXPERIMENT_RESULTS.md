@@ -1,4 +1,4 @@
-# PhenoSuite Experiment Results
+# PhenoFrame Experiment Results
 
 Detailed results for each validation experiment. For setup instructions, external dataset requirements, and file listings, see [`README.md`](README.md).
 
@@ -22,28 +22,28 @@ Detailed results for each validation experiment. For setup instructions, externa
 
 **Method:** Re-implement the voxel PCA pipeline and compare our extracted traits against the published theta/phi values on the same skeletons.
 
-**Outcome:** Appendix-quality concordance. Our PCA code matches the gold standard, confirming the baseline is correct before comparing against PhenoSuite's spline-based pipeline.
+**Outcome:** Appendix-quality concordance. Our PCA code matches the gold standard, confirming the baseline is correct before comparing against PhenoFrame's spline-based pipeline.
 
 ---
 
-## E1b: PhenoSuite Trait Extraction vs Gold Standard
+## E1b: PhenoFrame Trait Extraction vs Gold Standard
 
-**Notebook:** `01_phyllotaxis/03_sec2.2_phenosuite_traits_vs_gold.ipynb`
+**Notebook:** `01_phyllotaxis/03_sec2.2_phenoframe_traits_vs_gold.ipynb`
 
-**Purpose:** Evaluate how well PhenoSuite's descriptor-based trait pipeline (spline reconstruction from XML) reproduces the gold-standard theta/phi values derived from the PCA-based voxel pipeline.
+**Purpose:** Evaluate how well PhenoFrame's descriptor-based trait pipeline (spline reconstruction from XML) reproduces the gold-standard theta/phi values derived from the PCA-based voxel pipeline.
 
-**Method:** For each plant, convert the voxel skeleton to a PhenoSuite spline-override descriptor (preserving the original skeleton geometry exactly), extract traits via `compute_traits_from_descriptor`, and compare against the gold-standard theta/phi.
+**Method:** For each plant, convert the voxel skeleton to a PhenoFrame spline-override descriptor (preserving the original skeleton geometry exactly), extract traits via `compute_traits_from_descriptor`, and compare against the gold-standard theta/phi.
 
 **Results:**
 
-| Trait | r | R^2 | Median |error| (PhenoSuite) | Notes |
+| Trait | r | R^2 | Median |error| (PhenoFrame) | Notes |
 |-------|---|-----|-----------------------------|-------|
 | theta (inclination) | 0.69 | 0.48 | ~5 deg | Filtered to lower 4 leaves |
 | phi (azimuth) | 0.73 | 0.53 | ~15 deg | Filtered to lower 4 leaves |
 
 **Comparison against published baselines (Davis et al. 2025, lower-canopy phi only):**
 
-| Comparison | Published R^2 | PhenoSuite R^2(phi) |
+| Comparison | Published R^2 | PhenoFrame R^2(phi) |
 |-----------|----------------|--------------------|
 | 3D reconstruction, same plants 2 days apart (cross-timepoint repeatability) | 0.41 (n = 961 angles) | **0.53** |
 | 3D reconstruction vs manual measurement (method agreement) | 0.48 (n = 75 angles) | **0.53** |
@@ -55,13 +55,13 @@ Median |error| is **not reported in Davis et al. 2025** (the paper quantifies re
 
 **Key observations:**
 
-- PhenoSuite's R^2(phi) = 0.53 **exceeds the published cross-timepoint repeatability (0.41) and method-vs-manual agreement (0.48)** from Davis et al. 2025, and approaches the inter-observer manual ceiling (0.55). The spline-based pipeline is therefore at least as reliable as the published voxel-PCA approach on the same skeletons.
+- PhenoFrame's R^2(phi) = 0.53 **exceeds the published cross-timepoint repeatability (0.41) and method-vs-manual agreement (0.48)** from Davis et al. 2025, and approaches the inter-observer manual ceiling (0.55). The spline-based pipeline is therefore at least as reliable as the published voxel-PCA approach on the same skeletons.
 - The R^2 = 0.41 cited in Davis et al. 2025 is a **phi** statistic (cross-timepoint repeatability of phyllotaxic angles), not a theta statistic; earlier drafts of this writeup misattributed it.
-- No published R^2 baseline exists for theta in Davis 2025 (which is a phyllotaxy/phi paper) or for the trait set in Tross 2021 as cited here. PhenoSuite's R^2(theta) = 0.48 is therefore reported standalone, without a published comparison point.
-- The +/-180 degree corner clusters in the phi scatter plot are v2 sign ambiguity artifacts from the PCA decomposition in the gold standard, not errors in PhenoSuite.
+- No published R^2 baseline exists for theta in Davis 2025 (which is a phyllotaxy/phi paper) or for the trait set in Tross 2021 as cited here. PhenoFrame's R^2(theta) = 0.48 is therefore reported standalone, without a published comparison point.
+- The +/-180 degree corner clusters in the phi scatter plot are v2 sign ambiguity artifacts from the PCA decomposition in the gold standard, not errors in PhenoFrame.
 - Filtering by voxel count >= 20 drops 2% of leaves and improves tail statistics.
 
-**Figures:** `e1b_scatter_phenosuite_vs_gold.png`, `e1b_bland_altman_by_node.png`, `e1b_scatter_filtered.png`
+**Figures:** `e1b_scatter_phenoframe_vs_gold.png`, `e1b_bland_altman_by_node.png`, `e1b_scatter_filtered.png`
 
 ---
 
@@ -134,7 +134,7 @@ Median |error| is **not reported in Davis et al. 2025** (the paper quantifies re
 
 **Notebook:** `01_phyllotaxis/01_sec2.1_python_cpp_validation.ipynb`
 
-**Purpose:** Verify that the pure-Python forward model (`phenosuite.traits.compute_traits_from_descriptor`) produces identical results to the C++ geometry engine (`phenosuite.wrapper.Maize`) for all measured traits.
+**Purpose:** Verify that the pure-Python forward model (`phenoframe.traits.compute_traits_from_descriptor`) produces identical results to the C++ geometry engine (`phenoframe.wrapper.Maize`) for all measured traits.
 
 **Method:** For each of 500 plant descriptors (PlantsC++ dataset, 6,213 leaves total), run both the C++ engine and the Python forward model, extract per-leaf traits, and compare.
 
@@ -228,7 +228,7 @@ The model uses Y-up coordinates, so `connection_point.y` is the height axis. The
 
 **Notebook:** `01_phyllotaxis/06_sec2.4_heritability.ipynb`
 
-**Purpose:** Test whether the PhenoSuite representation preserves heritable trait variation by comparing broad-sense H^2 across three trait sources on the same plants and same lme4 model.
+**Purpose:** Test whether the PhenoFrame representation preserves heritable trait variation by comparing broad-sense H^2 across three trait sources on the same plants and same lme4 model.
 
 **Method:** Davis et al. 2025's exact heritability framework — random-intercept REML mixed model `trait ~ 1 + (1|PI_num)` on biological replicates (>=2 plants per genotype), reference genotype `PI_656058` excluded. H^2 = sigma^2_G / (sigma^2_G + sigma^2_e / 2), matching Davis paper Eq. 3 with n=2.
 
@@ -236,16 +236,16 @@ The model uses Y-up coordinates, so `connection_point.y` is the height axis. The
 
 **Three trait sources** (same 128 plants, 44 replicated genotypes, lower 5 leaves):
 - **gold** — voxel-PCA theta/phi from `angles.txt` (published method, Gaillard 2021).
-- **E1b** — PhenoSuite's spline-based trait extractor on the override descriptor (full skeleton, no compression).
-- **E5** — PhenoSuite's trait extractor on the 3-parameter procedural fit (`leaf_angle`, `droopiness`, `leaf_length`).
+- **E1b** — PhenoFrame's spline-based trait extractor on the override descriptor (full skeleton, no compression).
+- **E5** — PhenoFrame's trait extractor on the 3-parameter procedural fit (`leaf_angle`, `droopiness`, `leaf_length`).
 
 **Results (Davis Eq. 3 with n=2):**
 
 | Source | Traits with H^2 >= 0.20 | Median H^2 | Mean H^2 | Top trait |
 |--------|--------------------------|-------------|-----------|-----------|
 | gold (voxel PCA) | 8 / 13 | 0.319 | 0.288 | `am_phi_dev` = 0.561 |
-| E1b (override + PhenoSuite) | 7 / 13 | 0.293 | 0.249 | `med_phi_dev` = 0.498 |
-| **E5 (procedural + PhenoSuite)** | **10 / 13** | **0.484** | **0.382** | **`am_theta` = 0.607** |
+| E1b (override + PhenoFrame) | 7 / 13 | 0.293 | 0.249 | `med_phi_dev` = 0.498 |
+| **E5 (procedural + PhenoFrame)** | **10 / 13** | **0.484** | **0.382** | **`am_theta` = 0.607** |
 
 **Per-trait detail (Davis Eq. 3 H^2_n2):**
 
@@ -270,12 +270,12 @@ The model uses Y-up coordinates, so `connection_point.y` is the height axis. The
 - **Procedural compression preserves or enhances heritability.** E5 clears the H^2 >= 0.20 threshold for 10 of 13 traits versus 8 for the gold standard and 7 for the override extractor. The procedural fit acts as a regularizer that suppresses imaging noise while keeping biological signal. This validates the procedural representation as a viable phenotyping target for the genotype-to-phenotype direction (E9 distribution match, downstream GWAS).
 - **Upper-canopy theta becomes heritable under procedural compression.** Gold-standard `theta_4` has H^2 = 0; E5 `theta_4` has H^2 = 0.23. Davis 2025 explicitly attributes upper-leaf H^2 loss to plant movement during rotation imaging — the procedural model's smoothing across nodes recovers a signal that single-leaf PCA cannot.
 - **Per-plant aggregates are consistently the most heritable summaries.** `med_phi_dev` and `am_phi_dev` clear 0.45 in all three sources. These are the natural targets for downstream GWAS.
-- **One trait shows clean extractor loss with no recovery.** `Phi_dev_1` drops from H^2 = 0.34 (gold) to 0.12 (E1b) and stays low (0.14) at E5. This is a genuine signal loss attributable to PhenoSuite's chord-based azimuth measurement on the first inter-node difference. Worth flagging for individual-leaf-precision use cases.
+- **One trait shows clean extractor loss with no recovery.** `Phi_dev_1` drops from H^2 = 0.34 (gold) to 0.12 (E1b) and stays low (0.14) at E5. This is a genuine signal loss attributable to PhenoFrame's chord-based azimuth measurement on the first inter-node difference. Worth flagging for individual-leaf-precision use cases.
 - **N = 44 genotypes is small.** Confidence intervals on individual H^2 values are wide. The within-pipeline rankings (gold vs E1b vs E5) are robust because all three use the same plants and same model.
 
 **Caveat on cross-paper comparison.** Davis 2025 uses **timepoint replicates** (same plant on different days) for her heritability model. Our Zenodo voxel archive provides only one timepoint per plant, so we use **biological replicates** (different physical plants of the same genotype) — a more conservative design that places a lower bound on H^2 than Davis's timepoint design. Absolute H^2 magnitudes are therefore not directly comparable to Davis's numbers, but the H^2 >= 0.20 threshold she uses is appropriate as a 'heritable' bar in either design.
 
-**Figures:** `e8_h2_by_trait.png` (grouped bar chart, gold/E1b/E5 per trait with H^2=0.20 threshold line), `e8_h2_vs_gold_scatter.png` (PhenoSuite H^2 vs gold H^2 scatter on the y=x line).
+**Figures:** `e8_h2_by_trait.png` (grouped bar chart, gold/E1b/E5 per trait with H^2=0.20 threshold line), `e8_h2_vs_gold_scatter.png` (PhenoFrame H^2 vs gold H^2 scatter on the y=x line).
 
 **Outputs:** `e8_heritability.csv` (long form with all variance components), `e8_h2_by_trait.csv` (wide form per trait), `e8_summary.csv` (per-source counts).
 
@@ -287,7 +287,7 @@ The model uses Y-up coordinates, so `connection_point.y` is the height axis. The
 |------------|-------------------|------------|--------|
 | E0 | Data availability | Plant count | 332 usable skeletons |
 | E1 | PCA pipeline re-implementation | Concordance | Matches gold standard |
-| E1b | PhenoSuite traits vs gold standard | R^2(theta), R^2(phi) | 0.48, 0.53 |
+| E1b | PhenoFrame traits vs gold standard | R^2(theta), R^2(phi) | 0.48, 0.53 |
 | E5 | Procedural round-trip | R^2(theta), R^2(phi) | 0.29, 0.53 |
 | E4 | Geometric fidelity (mesh vs skeleton) | Median Chamfer distance | 3.55 cm |
 | E3 | Python vs C++ pipeline parity | Length MAE | 0.0001 mm |
@@ -302,7 +302,7 @@ The model uses Y-up coordinates, so `connection_point.y` is the height axis. The
 
 **Notebook:** `01_phyllotaxis/07_sec2.5_distribution_match.ipynb`
 
-**Purpose:** Test whether a small parametric model fitted to E5's per-leaf procedural parameters can reproduce the population statistics of the real 324-plant set. If yes, PhenoSuite's 3-parameter descriptor format is a viable target for synthetic-plant generation, GWAS power simulation, and downstream-pipeline stress tests.
+**Purpose:** Test whether a small parametric model fitted to E5's per-leaf procedural parameters can reproduce the population statistics of the real 324-plant set. If yes, PhenoFrame's 3-parameter descriptor format is a viable target for synthetic-plant generation, GWAS power simulation, and downstream-pipeline stress tests.
 
 **Method:** Two generative models of increasing realism, both fitted to E5's filtered population (324 plants, 2,479 leaves, same outlier filter as E5):
 
@@ -359,7 +359,7 @@ Model A breaks all cross-node correlations to zero by design (independent sampli
 
 - The Gaussian assumption is convenient but may misfit some parameters (especially `droopiness`, which has a heavier left tail in the real data). A future iteration could swap in lognormal for `leaf_length` or a mixture for `droopiness`.
 - Only the lower N_FIT = 7 nodes are jointly modeled; higher nodes fall back to per-node marginals. This is fine for population statistics but limits the joint realism of synthetic plants with many leaves.
-- We have not run the synthetic descriptors through PhenoSuite's forward model and compared the resulting measured-trait (θ, φ) distributions to the real ones. That is a natural follow-up — and the existing pipeline supports it — but it is out of scope for E9 as currently scoped.
+- We have not run the synthetic descriptors through PhenoFrame's forward model and compared the resulting measured-trait (θ, φ) distributions to the real ones. That is a natural follow-up — and the existing pipeline supports it — but it is out of scope for E9 as currently scoped.
 
 **Figures:** `e9_marginal_histograms.png` (per-node overlaid histograms), `e9_per_node_meanstd.png` (per-node mean ± std curves), `e9_plant_aggregates.png` (plant-level aggregate distributions), `e9_cross_node_correlations.png` (within-plant correlations bar chart — the killer plot showing Model B preserves what Model A breaks).
 
@@ -375,18 +375,18 @@ Model A breaks all cross-node correlations to zero by design (independent sampli
 
 **Notebook:** `01_phyllotaxis/09_sec2.5_holdout_validation.ipynb`
 
-**Purpose:** Address two methodological concerns in E9b: (1) the generator's config was calibrated on the same 324 plants it was later KS-compared against (data peeking), and (2) the published-pipeline-vs-PhenoSuite trait-extraction disagreement quantified in §2.2 sets an irreducible floor on how close any generator can get to the gold standard. E9c does a single-shot held-out validation and reports a measurement-gap baseline alongside the headline numbers.
+**Purpose:** Address two methodological concerns in E9b: (1) the generator's config was calibrated on the same 324 plants it was later KS-compared against (data peeking), and (2) the published-pipeline-vs-PhenoFrame trait-extraction disagreement quantified in §2.2 sets an irreducible floor on how close any generator can get to the gold standard. E9c does a single-shot held-out validation and reports a measurement-gap baseline alongside the headline numbers.
 
 **Method:**
 
 - **80/20 train/test split** over plant IDs (deterministic, seed = 20260601). Train = 259 plants, test = 65 plants.
-- Derive a train-only generator config via `phenosuite.MaizeGenerator.derive_config(...)` (the wrapper handles the `leafLengthBase` → `leafLengthScaleCurve` naming convention etc.). Train-only canopy curves for `leafLengthBase`, `droopinessBase`, `leafAngleBase` (gold-θ calibrated), train-only height + numLeaves means/stds, uniform-noise-corrected `tillerAzimuthNoise`, sorghum-typical visual defaults.
+- Derive a train-only generator config via `phenoframe.MaizeGenerator.derive_config(...)` (the wrapper handles the `leafLengthBase` → `leafLengthScaleCurve` naming convention etc.). Train-only canopy curves for `leafLengthBase`, `droopinessBase`, `leafAngleBase` (gold-θ calibrated), train-only height + numLeaves means/stds, uniform-noise-corrected `tillerAzimuthNoise`, sorghum-typical visual defaults.
 - Generate 324 synthetic plants with `MaizeGenerator(...).generate(...)` and the train-only config.
-- Extract synthetic traits via the PhenoSuite trait pipeline (§2.1 / E3-equivalent).
+- Extract synthetic traits via the PhenoFrame trait pipeline (§2.1 / E3-equivalent).
 - For each plant-level aggregate, compute three Wasserstein-1 distances (in degrees):
   - `synth_vs_test_gold` — synthetic vs the held-out test plants' Davis voxel-PCA gold standard. **Headline.**
-  - `synth_vs_test_phenosuite` — synthetic vs the same test plants' PhenoSuite traits on their E5 procedural fits. Removes measurement-method gap.
-  - `measurement_gap_baseline` — gold vs PhenoSuite on the same test plants. **The floor**: the disagreement that exists without any generation.
+  - `synth_vs_test_phenoframe` — synthetic vs the same test plants' PhenoFrame traits on their E5 procedural fits. Removes measurement-method gap.
+  - `measurement_gap_baseline` — gold vs PhenoFrame on the same test plants. **The floor**: the disagreement that exists without any generation.
 - Also compute KS statistics (no p-values: at N≈260 vs 65 any 2° mean shift is significant; KS p-values do not differentiate "close to the floor" from "far above it").
 
 **Results — plant-aggregate W₁ (degrees), test split:**
@@ -400,8 +400,8 @@ Model A breaks all cross-node correlations to zero by design (independent sampli
 
 **Key observations:**
 
-- **The φ generator is at the measurement-method floor.** `synth_vs_test_gold` is essentially equal to the floor on `mean |Δφ|` (5.41° vs 5.93°), and within 2° on `median |Δφ|`. The residual disagreement on φ is fully explained by the §2.2 / E1b PhenoSuite-vs-voxel-PCA gap (R²(φ) = 0.53) and cannot be improved without changing the trait extractor.
-- **The θ generator has a 3-5° real residual above the floor.** This is genuine generator-vs-population mismatch, not measurement-method confounding — synth-vs-PhenoSuite-on-real W₁ stays elevated even after removing the gold-vs-PhenoSuite gap.
+- **The φ generator is at the measurement-method floor.** `synth_vs_test_gold` is essentially equal to the floor on `mean |Δφ|` (5.41° vs 5.93°), and within 2° on `median |Δφ|`. The residual disagreement on φ is fully explained by the §2.2 / E1b PhenoFrame-vs-voxel-PCA gap (R²(φ) = 0.53) and cannot be improved without changing the trait extractor.
+- **The θ generator has a 3-5° real residual above the floor.** This is genuine generator-vs-population mismatch, not measurement-method confounding — synth-vs-PhenoFrame-on-real W₁ stays elevated even after removing the gold-vs-PhenoFrame gap.
 - **Calibration honesty.** Only the canopy curves + plant-level means/stds + `tillerAzimuthNoise` come from the train set. `leafJitterScale = 0.60` is the empirical compromise picked in E9b and held fixed; loadings, whorl, visual defaults are inherited from the maize template unchanged.
 - **Three element-name bugs surfaced by the strict-error wrapper** (`plantHeight` → `height`, `numberOfLeaves` → `numLeaves`, `leafLengthCurve` → `leafLengthScaleCurve`). The old inline `for el in root.iter(name): ... return` code silently no-op'd; the wrapper raises `KeyError`. Fix tightened the held-out W₁ residuals by 0.5–0.7° on θ aggregates. Scope of the bug confined to this notebook; §2.5 main config / figures / numbers unaffected.
 
@@ -435,8 +435,8 @@ Model A breaks all cross-node correlations to zero by design (independent sampli
   - Chr06:41,390,777 (RMIP ≈ 0.10)
 - **Three phenotype sources** (the same 215 SAP genotypes that intersect the Zenodo voxel archive with Davis's filtered VCF):
   - Gold — voxel-PCA φ values from `angles.txt`. Positive control.
-  - Spline — PhenoSuite trait pipeline on the override descriptor.
-  - Procedural — PhenoSuite trait pipeline on the procedural 3-parameter fit.
+  - Spline — PhenoFrame trait pipeline on the override descriptor.
+  - Procedural — PhenoFrame trait pipeline on the procedural 3-parameter fit.
 - **Trait definition:** `med` per plant = median of `|normalize360(φᵢ₊₁ − φᵢ) − 180°|` over leaves i = 0..3. Per genotype, average across plant replicates.
 - **Test:** per-genotype linear regression `med = β₀ + β₁ · dosage + ε`, dosage = 0/1/2 (minor-allele count). Reference genotype `PI656058` excluded per Davis. No kinship adjustment (Phase 1 design).
 - **Davis's expected result:** minor allele increases `med` at all three markers (positive β₁).

@@ -1,0 +1,34 @@
+{
+  "metadata": {
+    "title": "GIC maize longitudinal voxel reconstructions and optimized skeletons (2024)",
+    "upload_type": "dataset",
+    "description": "Longitudinal processed 3D reconstructions of 80 physical maize plants representing 20 genotypes and four biological replicates. The archive contains 4,171 scan directories, including voxel coordinates and processing status for every scan; 3,679 scans additionally contain optimized skeletons and reference leaf-angle measurements. The paired PhenoFrame geometric and procedural analyses use 3,317 scans that passed all analysis filters. Repeated scans are plant timepoints, not independent plants. Regenerable OBJ meshes and preview images are intentionally excluded.",
+    "creators": [
+      {"name": "Vazquez, Jorge", "affiliation": "Purdue University"},
+      {"name": "Cuellar, Karla", "affiliation": "University of Nebraska-Lincoln"},
+      {"name": "Davis, Jensina", "affiliation": "University of Nebraska-Lincoln"},
+      {"name": "Schnable, James", "affiliation": "University of Nebraska-Lincoln"},
+      {"name": "Benes, Bedrich", "affiliation": "Purdue University"}
+    ],
+    "access_right": "open",
+    "license": "cc-by-4.0",
+    "version": "1.0.0",
+    "keywords": [
+      "maize",
+      "Zea mays",
+      "plant phenotyping",
+      "voxel reconstruction",
+      "plant skeleton",
+      "longitudinal imaging",
+      "PhenoFrame"
+    ],
+    "related_identifiers": [
+      {
+        "identifier": "https://github.com/JorgeAskur/PhenoFrame",
+        "relation": "isSupplementTo",
+        "scheme": "url"
+      }
+    ],
+    "notes": "Archive SHA-256: 88f6dc5a40a598f17323db4baab3796d3d4b2e65344c4738cf4b5624722f8b1a"
+  }
+}
