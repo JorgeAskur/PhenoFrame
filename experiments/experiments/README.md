@@ -281,7 +281,7 @@ Then point the loader at it via the environment variable (recommended), or drop
 it at the default path resolved by `experiments/paths.py`:
 
 ```
-export PYMAIZE_JENSINA_PATH=/path/to/phyllotaxy
+export PHENOFRAME_JENSINA_PATH=/path/to/phyllotaxy
 ```
 
 ### 2. Sorghum voxel reconstructions
@@ -293,7 +293,7 @@ Point the loader at the extracted archive via the environment variable
 (recommended), or use the default path resolved by `experiments/paths.py`:
 
 ```
-export PYMAIZE_VOXEL_PATH=/path/to/Sorghum
+export PHENOFRAME_VOXEL_PATH=/path/to/Sorghum
 ```
 
 The directory must contain `dataset/`, `reconstructed/`, and `skeletons/`.
