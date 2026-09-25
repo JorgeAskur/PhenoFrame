@@ -12,6 +12,9 @@ PhenoFrame provides three main capabilities:
 
 The descriptor format is documented in [`DESCRIPTOR_FORMAT.md`](DESCRIPTOR_FORMAT.md), with a formal XSD at [`phenoframe/schemas/descriptor.xsd`](phenoframe/schemas/descriptor.xsd).
 
+An interactive application for the Procedural Model and Stochastic Plant Generator is available at [Maize Procedural Model](https://github.com/JorgeAskur/ProceduralModelMaize).
+
+
 ## Requirements
 
 - Python ≥ 3.10
