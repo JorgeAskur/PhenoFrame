@@ -6,12 +6,13 @@ Toolkit for descriptor-based procedural maize plant modeling and phenotyping tra
 
 PhenoFrame provides three main capabilities:
 
-1. **Procedural Plant Generation** — Build 3D maize plant meshes (OBJ) from parametric descriptions via a Python wrapper around a C++ geometry engine. The Python wrapper exposes all geometry-related parameters from the C++ engine (26 per-leaf attributes including surface noise, midrib geometry, ligule shaping, and wave parameters) and defaults to maximum mesh resolution (200x200 tessellation density).
+1. **Procedural Plant Generation** — Build 3D maize plant meshes (OBJ) from parametric descriptions via a Python wrapper around a C++ geometry engine. The Python wrapper exposes all geometry-related parameters from the C++ engine (26 per-leaf attributes, including surface noise, midrib geometry, ligule shaping, and wave parameters) and defaults to maximum mesh resolution (200x200 tessellation density).
 2. **Trait Computation** — Compute leaf-level phenotyping traits (leaf length, angle, connection point, tip position) from plant descriptor XML files using either the C++ engine or a pure-Python forward model. Both pipelines produce functionally identical results (length MAE = 0.0001 mm, inclination MAE = 0.0015°).
 3. **Stochastic Plant Generation** — Sample synthetic descriptor populations from a hierarchical model (4 latent factors + per-node canopy curves + whorl compression) implemented in the sibling C++ `MaizeGenerator` project. A thin Python wrapper (`phenoframe.MaizeGenerator`) handles binary discovery, config-XML derivation from population statistics, and batch invocation of `Maize.exe --headless` — no manual subprocess plumbing required.
 
 The descriptor format is documented in [`DESCRIPTOR_FORMAT.md`](DESCRIPTOR_FORMAT.md), with a formal XSD at [`phenoframe/schemas/descriptor.xsd`](phenoframe/schemas/descriptor.xsd).
 
+An interactive application for the Procedural Model and Stochastic Plant Generator is available at [Maize Procedural Model](https://github.com/JorgeAskur/ProceduralModelMaize).
 ## Requirements
 
 - Python ≥ 3.10
